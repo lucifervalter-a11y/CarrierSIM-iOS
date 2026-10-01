@@ -1,0 +1,202 @@
+   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
+warning: function `parse_u64_value` is never used
+  --> vendor/idevice/src/services/dvt/process_control.rs:55:4
+   |
+55 | fn parse_u64_value(value: &Value) -> Option<u64> {
+   |    ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `extract_ns_error_message` is never used
+  --> vendor/idevice/src/services/dvt/process_control.rs:63:4
+   |
+63 | fn extract_ns_error_message(value: &Value) -> Option<String> {
+   |    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `launch_with_options` is never used
+   --> vendor/idevice/src/services/dvt/process_control.rs:234:25
+    |
+120 | impl<'a, R: ReadWrite> ProcessControlClient<'a, R> {
+    | -------------------------------------------------- method in this implementation
+...
+234 |     pub(crate) async fn launch_with_options(
+    |                         ^^^^^^^^^^^^^^^^^^^
+
+warning: function `remote_timeout_error` is never used
+  --> vendor/idevice/src/services/dvt/remote_server.rs:89:4
+   |
+89 | fn remote_timeout_error(timeout: std::time::Duration) -> IdeviceError {
+   |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: variants `Unhandled`, `HandledNoReply`, and `Reply` are never constructed
+   --> vendor/idevice/src/services/dvt/remote_server.rs:173:5
+    |
+172 | pub(crate) enum IncomingHandlerOutcome {
+    |                 ---------------------- variants in this enum
+173 |     Unhandled,
+    |     ^^^^^^^^^
+174 |     HandledNoReply,
+    |     ^^^^^^^^^^^^^^
+175 |     Reply(Vec<u8>),
+    |     ^^^^^
+
+warning: fields `code`, `identifier`, and `remote` are never read
+   --> vendor/idevice/src/services/dvt/remote_server.rs:186:5
+    |
+185 | struct ChannelMetadata {
+    |        --------------- fields in this struct
+186 |     code: i32,
+    |     ^^^^
+187 |     identifier: String,
+    |     ^^^^^^^^^^
+188 |     remote: bool,
+    |     ^^^^^^
+    |
+    = note: `ChannelMetadata` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: field `0` is never read
+   --> vendor/idevice/src/services/dvt/remote_server.rs:200:14
+    |
+200 |     Received(Dictionary),
+    |     -------- ^^^^^^^^^^
+    |     |
+    |     field in this variant
+    |
+    = note: `CapabilityHandshakeState` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+    |
+200 -     Received(Dictionary),
+200 +     Received(()),
+    |
+
+warning: variant `Skipped` is never constructed
+   --> vendor/idevice/src/services/dvt/remote_server.rs:199:5
+    |
+197 | enum CapabilityHandshakeState {
+    |      ------------------------ variant in this enum
+198 |     Pending,
+199 |     Skipped,
+    |     ^^^^^^^
+    |
+    = note: `CapabilityHandshakeState` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: multiple associated items are never used
+   --> vendor/idevice/src/services/dvt/remote_server.rs:302:19
+    |
+273 | impl<R: ReadWrite> RemoteServerClient<R> {
+    | ---------------------------------------- associated items in this implementation
+...
+302 |     pub(crate) fn disconnect_waiter(&self) -> impl Future<Output = ()> + Send + 'static
+    |                   ^^^^^^^^^^^^^^^^^
+...
+316 |     pub(crate) async fn supported_identifiers(&self) -> Option<Dictionary> {
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+...
+324 |     pub(crate) async fn wait_for_capabilities(
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+...
+356 |     pub(crate) async fn perform_handshake(
+    |                         ^^^^^^^^^^^^^^^^^
+...
+464 |     pub(crate) async fn open_service_channel<'c>(
+    |                         ^^^^^^^^^^^^^^^^^^^^
+...
+476 |     pub(crate) async fn make_proxy_channel<'c>(
+    |                         ^^^^^^^^^^^^^^^^^^
+...
+489 |     pub(crate) async fn open_proxied_service_channel<'c>(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+505 |     pub(crate) fn accept_owned_channel(&self, code: i32) -> OwnedChannel<R> {
+    |                   ^^^^^^^^^^^^^^^^^^^^
+...
+520 |     pub(crate) async fn register_incoming_channel_initializer<F, Fut>(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+563 |     pub(crate) async fn wait_for_registered_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+595 |     pub(crate) async fn wait_for_service_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+605 |     pub(crate) async fn wait_for_proxied_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+646 |     pub(crate) async fn wait_for_proxied_service_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+657 |     async fn find_registered_channel_code(
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+670 |     async fn find_registered_proxied_channel_code(
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+696 |     fn parse_dtxproxy_identifier(identifier: &str, remote_channel: bool) -> Option<(&str, &str)> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `detach` is never used
+    --> vendor/idevice/src/services/dvt/remote_server.rs:1300:19
+     |
+1298 | impl<R: ReadWrite> Channel<'_, R> {
+     | --------------------------------- method in this implementation
+1299 |     /// Converts this borrowed channel handle into an owned/shared one.
+1300 |     pub(crate) fn detach(&self) -> OwnedChannel<R> {
+     |                   ^^^^^^
+
+warning: methods `read_message_timeout`, `call_method_with_reply`, `set_incoming_handler`, `clear_incoming_handler`, and `send_raw_reply_for` are never used
+    --> vendor/idevice/src/services/dvt/remote_server.rs:1387:25
+     |
+1357 | impl<R: ReadWrite + 'static> OwnedChannel<R> {
+     | -------------------------------------------- methods in this implementation
+...
+1387 |     pub(crate) async fn read_message_timeout(
+     |                         ^^^^^^^^^^^^^^^^^^^^
+...
+1417 |     pub(crate) async fn call_method_with_reply(
+     |                         ^^^^^^^^^^^^^^^^^^^^^^
+...
+1459 |     pub(crate) async fn set_incoming_handler<F, Fut>(&mut self, handler: F)
+     |                         ^^^^^^^^^^^^^^^^^^^^
+...
+1473 |     pub(crate) async fn clear_incoming_handler(&mut self) {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^
+...
+1478 |     pub(crate) async fn send_raw_reply_for(
+     |                         ^^^^^^^^^^^^^^^^^^
+
+warning: `idevice` (lib) generated 11 warnings
+warning: unused variable: `pin_callback`
+   --> vendor/idevice-ffi/src/tunnel_provider.rs:832:5
+    |
+832 |     pin_callback: Option<extern "C" fn(context: *mut c_void) -> *const c_char>,
+    |     ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_pin_callback`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `ctx`
+   --> vendor/idevice-ffi/src/tunnel_provider.rs:872:9
+    |
+872 |     let ctx = PinCtx(pin_context);
+    |         ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
+
+warning: unused variable: `pin_callback`
+   --> vendor/idevice-ffi/src/tunnel_provider.rs:962:5
+    |
+962 |     pin_callback: Option<extern "C" fn(context: *mut c_void) -> *const c_char>,
+    |     ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_pin_callback`
+
+warning: unused variable: `ctx`
+    --> vendor/idevice-ffi/src/tunnel_provider.rs:1002:9
+     |
+1002 |     let ctx = PinCtx(pin_context);
+     |         ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
+
+warning: `idevice-ffi` (lib test) generated 4 warnings (run `cargo fix --lib -p idevice-ffi --tests` to apply 4 suggestions)
+    Finished `release` profile [optimized] target(s) in 1m 01s
+     Running unittests src/lib.rs (build/host-tests/release/deps/idevice_ffi-b51b2d51400e5bd4)
+
+running 1 test
+test tunnel_provider::carrier_sim_lan_tests::lan_target_ignores_loopback_extra_hosts_and_previous_device_cache ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,48 @@
+name: Build CarrierSIM IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master, "upload/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 git curl ca-certificates dpkg-dev build-essential xz-utils libedit2 libffi8 libxml2 libzstd1 libtinfo6 zlib1g libsqlite3-dev
+      - uses: actions/cache@v4
+        with:
+          path: ../toolchain
+          key: carriersim-linux-${{ hashFiles('scripts/linux-toolchain.json') }}
+      - name: Build current sources
+        run: |
+          chmod +x scripts/*.sh
+          bash scripts/setup-linux.sh --build
+      - name: Verify both IPA packages
+        run: |
+          python3 Tests/verify_package.py build/CarrierSIM-iOS-unsigned.ipa > build/package-main.json
+          python3 Tests/verify_package.py build/CarrierSIM-iOS-external-vpn.ipa --external-vpn > build/package-external.json
+      - name: Run core and LAN regression tests
+        run: |
+          export RUSTUP_HOME="$PWD/../toolchain/rustup"
+          export CARGO_HOME="$PWD/../toolchain/cargo"
+          export PATH="$CARGO_HOME/bin:$PATH"
+          export CARGO_TARGET_DIR="$PWD/build/host-tests"
+          export CARGO_PROFILE_RELEASE_LTO=false
+          cargo test --locked --release --lib --manifest-path rust-core/Cargo.toml
+          cargo test --locked --release --manifest-path rust-core/Cargo.toml -p idevice-ffi --lib carrier_sim_lan_tests
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CarrierSIM-1.1-needs-Apple-signing
+          path: |
+            build/*.ipa
+            build/CarrierSIM-build-manifest.json
+            build/package-*.json

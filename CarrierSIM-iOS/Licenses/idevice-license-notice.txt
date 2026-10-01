@@ -1,0 +1,36 @@
+idevice and idevice-ffi — upstream attribution and license declaration
+
+Author: Jackson Coxson and contributors.
+Source: https://github.com/jkcoxson/idevice
+Upstream revision: 7bd551c16c6dd2e058740d85a2d9399a51a776e9
+
+The upstream root README.md at the pinned revision declares:
+
+    ## License
+
+    MIT
+
+The idevice/Cargo.toml at the same revision declares:
+
+    authors = ["Jackson Coxson"]
+    license = "MIT"
+    repository = "https://github.com/jkcoxson/idevice"
+
+There is no separately named LICENSE or LICENCE file in that revision's
+recursive repository tree. The declarations above are preserved as such;
+they are not represented as a copied upstream LICENSE.txt.
+
+Standard MIT terms are reproduced separately in SPDX-MIT.txt.
+
+The idevice source included in this distribution is vendored via AirCard-iOS,
+with upstream patches described in rust-core/vendor/idevice/README.md.
+CarrierSIM also removes logging of complete pairing records and adds bounds
+and cancellation where noted in its source. Original source attributions are
+preserved in the supplied source code.
+
+idevice-ffi is part of the same upstream repository and covered by its root
+README license declaration; its package Cargo.toml does not repeat that field.
+
+The plist C compatibility header included with the source retains its
+libplist copyright and LGPL-2.1-or-later header. See libplist-headers-notice.txt
+and LGPL-2.1.txt. The plist_ffi Rust implementation separately declares MIT.

@@ -1,0 +1,61 @@
+{
+  "project": "CarrierSIM-iOS",
+  "version": "1.0.0",
+  "target": "iOS27 arm64",
+  "input_archive": {
+    "name": "CarrierSIM-v4-macOS-Windows 2.zip",
+    "sha256": "e60f24a31c13632f04b88fe3b0653b793181dead8dcfaefa8e91bea792d404b9"
+  },
+  "upstreams": [
+    {
+      "name": "AirCard-iOS",
+      "url": "https://github.com/Mak5er/AirCard-iOS",
+      "commit": "097a058c984ffc33ccb697b9dfe8058be3e86244",
+      "reuse": "Native paired transport, pairing, Grappa bridge; dedicated carrier transaction added"
+    },
+    {
+      "name": "idevice",
+      "url": "https://github.com/jkcoxson/idevice",
+      "commit": "7bd551c16c6dd2e058740d85a2d9399a51a776e9",
+      "reuse": "Vendored sources from AirCard with inherited OPACK changes; private pairing dictionary and AFC attribute-value logging removed; both AFC symlink target attribute names supported"
+    },
+    {
+      "name": "LocalDevVPN",
+      "url": "https://github.com/jkcoxson/LocalDevVPN",
+      "commit": "af3fd697803ada4ac2b8d518358f5ab0a534844c",
+      "reuse": "Local loopback provider adapted to Objective-C; original license and attribution retained"
+    },
+    {
+      "name": "StikPair",
+      "url": "https://github.com/StikDebug/StikPair",
+      "commit": "d9661c505130a7b710225fb8ed61128527b46c7e",
+      "reuse": "Format/protocol compatibility research only; StikPair application sources not copied"
+    },
+    {
+      "name": "AirLift",
+      "url": "https://github.com/0xjohnnydev/airlift",
+      "reuse": "Method through supplied CarrierSIM and AirCard sources; MIT notice retained"
+    }
+  ],
+  "resources": {
+    "assets.zip": "6de1ea0be81a29c145ef414f24bc21d1dcb8a4eb737b22b1f956e9a6f0c2098b",
+    "bundle.yaml": "8505fd3391c78d147ad3bc61a73e6008fb1ca7412e6a77452691dacd938e3143"
+  },
+  "signing": "Ad-hoc integrity signature only. User Apple signing and provisioning required for installation.",
+  "physical_iphone_tested": false,
+  "carrier_sim_1_1": {
+    "date": "2026-10-01",
+    "base": "CarrierSIM-GitHub-upload.zip supplied by user",
+    "changes": [
+      "Explicit LAN target and separate pairing/backup storage",
+      "Bonjour lookup of Apple device services",
+      "Signed IPA preflight, AFC upload and InstallationProxy installation",
+      "Device identity binding before remote writes/install",
+      "MinimumOSVersion 26.0; self pairing requires 27; iOS 26 carrier modification unverified"
+    ],
+    "reference_project": "https://github.com/FrizzleM/SideInstaller",
+    "reference_use": "Protocol/workflow research only; no SideInstaller application or official binaries redistributed",
+    "physical_devices_tested": false,
+    "apple_signed": false
+  }
+}

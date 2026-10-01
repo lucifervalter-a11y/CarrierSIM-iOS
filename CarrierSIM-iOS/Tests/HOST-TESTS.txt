@@ -1,0 +1,571 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
+   Compiling libc v0.2.189
+   Compiling cfg-if v1.0.5
+   Compiling version_check v0.9.5
+   Compiling typenum v1.20.1
+   Compiling generic-array v0.14.7
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling syn v3.0.6
+   Compiling syn v2.0.119
+   Compiling getrandom v0.2.17
+   Compiling rand_core v0.6.4
+   Compiling subtle v2.6.1
+   Compiling pin-project-lite v0.2.17
+   Compiling smallvec v1.16.1
+   Compiling const-oid v0.9.6
+   Compiling crypto-common v0.1.7
+   Compiling futures-core v0.3.34
+   Compiling log v0.4.34
+   Compiling memchr v2.8.3
+   Compiling block-buffer v0.10.4
+   Compiling stable_deref_trait v1.2.1
+   Compiling digest v0.10.7
+   Compiling jobserver v0.1.35
+   Compiling shlex v2.0.1
+   Compiling futures-sink v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling find-msvc-tools v0.1.13
+   Compiling cc v1.4.7
+   Compiling zmij v1.0.23
+   Compiling bytes v1.12.1
+   Compiling synstructure v0.14.0
+   Compiling parking_lot_core v0.9.12
+   Compiling socket2 v0.6.5
+   Compiling zerofrom-derive v0.1.8
+   Compiling zeroize_derive v1.5.0
+   Compiling yoke-derive v0.8.3
+   Compiling zeroize v1.9.0
+   Compiling serde_derive v1.0.229
+   Compiling zerofrom v0.1.8
+   Compiling displaydoc v0.2.7
+   Compiling yoke v0.8.3
+   Compiling zerovec-derive v0.11.6
+   Compiling futures-io v0.3.34
+   Compiling mio v1.2.3
+   Compiling errno v0.3.14
+   Compiling cpufeatures v0.2.17
+   Compiling serde_json v1.0.151
+   Compiling signal-hook-registry v1.4.8
+   Compiling zerovec v0.11.8
+   Compiling parking_lot v0.12.5
+   Compiling tokio-macros v2.7.2
+   Compiling zerocopy v0.8.57
+   Compiling once_cell v1.21.4
+   Compiling libm v0.2.16
+   Compiling autocfg v1.5.1
+   Compiling tokio v1.53.1
+   Compiling tinystr v0.8.4
+   Compiling cmake v0.1.58
+   Compiling num-traits v0.2.19
+   Compiling futures-channel v0.3.34
+   Compiling spin v0.9.9
+   Compiling dunce v1.0.5
+   Compiling utf8parse v0.2.2
+   Compiling pkg-config v0.3.34
+   Compiling itoa v1.0.18
+   Compiling fs_extra v1.3.0
+   Compiling serde v1.0.229
+   Compiling writeable v0.6.4
+   Compiling litemap v0.8.3
+   Compiling aws-lc-sys v0.45.0
+   Compiling anstyle-parse v1.0.0
+   Compiling icu_locale_core v2.3.0
+   Compiling potential_utf v0.1.6
+   Compiling zerotrie v0.2.5
+   Compiling futures-macro v0.3.34
+   Compiling colorchoice v1.0.5
+   Compiling anstyle v1.0.14
+   Compiling utf8_iter v1.0.4
+   Compiling getrandom v0.4.3
+   Compiling crc32fast v1.5.2
+   Compiling futures-task v0.3.34
+   Compiling rustix v1.1.5
+   Compiling slab v0.4.12
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling icu_normalizer_data v2.3.0
+   Compiling icu_properties_data v2.3.0
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v1.0.0
+   Compiling futures-util v0.3.34
+   Compiling icu_collections v2.3.0
+   Compiling icu_provider v2.3.1
+   Compiling ppv-lite86 v0.2.21
+   Compiling tracing-core v0.1.36
+   Compiling clap_lex v1.1.1
+   Compiling bitflags v2.13.2
+   Compiling thiserror v2.0.20
+   Compiling powerfmt v0.2.0
+   Compiling winnow v1.0.4
+   Compiling equivalent v1.0.2
+   Compiling time-core v0.1.9
+   Compiling deranged v0.5.8
+   Compiling simd-adler32 v0.3.10
+   Compiling base64ct v1.8.3
+   Compiling linux-raw-sys v0.12.1
+   Compiling strsim v0.11.1
+   Compiling num-conv v0.2.2
+   Compiling hashbrown v0.17.1
+   Compiling time v0.3.55
+   Compiling indexmap v2.14.2
+   Compiling clap_builder v4.6.7
+   Compiling pem-rfc7468 v0.7.0
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling serde_spanned v1.1.1
+   Compiling http v1.5.0
+   Compiling lazy_static v1.5.0
+   Compiling tracing-attributes v0.1.31
+   Compiling der_derive v0.7.3
+   Compiling thiserror-impl v2.0.20
+   Compiling block-padding v0.3.3
+   Compiling aws-lc-rs v1.18.1
+   Compiling flagset v0.4.7
+   Compiling cbindgen v0.29.4
+   Compiling fastrand v2.5.0
+   Compiling base64 v0.23.1
+   Compiling semver v1.0.28
+   Compiling getrandom v0.3.4
+   Compiling adler2 v2.0.1
+   Compiling winnow v0.7.15
+   Compiling tempfile v3.27.0
+   Compiling miniz_oxide v0.9.1
+   Compiling rustc_version v0.4.1
+   Compiling toml v0.9.12+spec-1.1.0
+   Compiling der v0.7.10
+   Compiling inout v0.1.4
+   Compiling tracing v0.1.44
+   Compiling http-body v1.1.0
+   Compiling clap v4.6.7
+   Compiling icu_properties v2.3.0
+   Compiling icu_normalizer v2.3.0
+   Compiling num-integer v0.1.47
+   Compiling quick-xml v0.42.0
+   Compiling heck v0.5.0
+   Compiling httparse v1.10.1
+   Compiling percent-encoding v2.3.2
+   Compiling plist v1.10.1
+   Compiling idna_adapter v1.2.2
+   Compiling spki v0.7.3
+   Compiling cipher v0.4.4
+   Compiling curve25519-dalek v4.1.3
+   Compiling flate2 v1.1.10
+   Compiling signature v2.2.0
+   Compiling tower-service v0.3.3
+   Compiling rand_core v0.10.1
+   Compiling try-lock v0.2.5
+   Compiling want v0.3.1
+   Compiling rand_core v0.9.5
+   Compiling idna v1.1.0
+   Compiling form_urlencoded v1.2.2
+   Compiling rand_chacha v0.3.1
+   Compiling rustls-pki-types v1.15.1
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling sync_wrapper v1.0.2
+   Compiling rustls v0.23.45
+   Compiling tower-layer v0.3.3
+   Compiling compression-core v0.4.33
+   Compiling num-bigint-dig v0.8.6
+   Compiling crossbeam-utils v0.8.23
+   Compiling atomic-waker v1.1.2
+   Compiling regex-syntax v0.8.11
+   Compiling untrusted v0.9.0
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling compression-codecs v0.4.43
+   Compiling regex-automata v0.4.18
+   Compiling rand v0.8.8
+   Compiling url v2.5.8
+   Compiling rand_chacha v0.9.0
+   Compiling pkcs8 v0.10.2
+   Compiling num-iter v0.1.46
+   Compiling futures-executor v0.3.34
+   Compiling sha2 v0.10.9
+   Compiling pin-project-internal v1.1.13
+   Compiling universal-hash v0.5.1
+   Compiling opaque-debug v0.3.1
+   Compiling base64 v0.22.1
+   Compiling cpufeatures v0.3.1
+   Compiling parking v2.2.1
+   Compiling ipnet v2.12.2
+   Compiling tower-http v0.6.11
+   Compiling hyper-util v0.1.20
+   Compiling futures-lite v2.6.1
+   Compiling chacha20 v0.10.2
+   Compiling poly1305 v0.8.0
+   Compiling pin-project v1.1.13
+   Compiling futures v0.3.34
+   Compiling pkcs1 v0.7.5
+   Compiling rand v0.9.5
+   Compiling matchers v0.2.0
+   Compiling async-compression v0.4.48
+   Compiling plist_ffi v0.1.6
+   Compiling ed25519 v2.2.3
+   Compiling chacha20 v0.9.1
+   Compiling nskeyedarchiver_converter v0.1.3
+   Compiling num-bigint v0.4.8
+   Compiling http-body-util v0.1.5
+   Compiling sharded-slab v0.1.7
+   Compiling tracing-log v0.2.0
+   Compiling tokio-util v0.7.19
+   Compiling sha1 v0.10.7
+   Compiling async-stream-impl v0.3.6
+   Compiling md-5 v0.10.6
+   Compiling hmac v0.12.1
+   Compiling aead v0.5.2
+   Compiling thread_local v1.1.10
+   Compiling iana-time-zone v0.1.65
+   Compiling base64 v0.21.7
+   Compiling nu-ansi-term v0.50.3
+   Compiling tracing-subscriber v0.3.23
+   Compiling idevice-srp v0.6.0
+   Compiling chrono v0.4.45
+   Compiling chacha20poly1305 v0.10.1
+   Compiling hkdf v0.12.4
+   Compiling uuid v1.26.1
+   Compiling async-stream v0.3.6
+   Compiling x509-cert v0.2.5
+   Compiling async_zip v0.0.18
+   Compiling reqwest v0.13.5
+   Compiling ns-keyed-archive v0.1.5
+   Compiling ed25519-dalek v2.2.0
+   Compiling crossbeam-channel v0.5.17
+   Compiling jktcp v0.1.7
+   Compiling rsa v0.9.10
+   Compiling rand v0.10.2
+   Compiling x25519-dalek v2.0.1
+   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
+   Compiling cbc v0.1.2
+   Compiling aes v0.8.4
+   Compiling plist-macro v0.1.6
+   Compiling flume v0.11.1
+   Compiling socket-pktinfo v0.3.2
+   Compiling if-addrs v0.15.0
+   Compiling zip v2.4.2
+   Compiling siphasher v1.0.3
+   Compiling web-time v1.1.0
+   Compiling symlink v0.1.0
+   Compiling bumpalo v3.20.3
+   Compiling tracing-appender v0.2.5
+   Compiling mdns-sd v0.19.2
+   Compiling zopfli v0.8.3
+   Compiling hex v0.4.3
+   Compiling rustls-webpki v0.103.15
+   Compiling tokio-rustls v0.26.5
+   Compiling idevice v0.1.63 (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/rust-core/vendor/idevice)
+warning: function `parse_u64_value` is never used
+  --> vendor/idevice/src/services/dvt/process_control.rs:55:4
+   |
+55 | fn parse_u64_value(value: &Value) -> Option<u64> {
+   |    ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `extract_ns_error_message` is never used
+  --> vendor/idevice/src/services/dvt/process_control.rs:63:4
+   |
+63 | fn extract_ns_error_message(value: &Value) -> Option<String> {
+   |    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `launch_with_options` is never used
+   --> vendor/idevice/src/services/dvt/process_control.rs:234:25
+    |
+120 | impl<'a, R: ReadWrite> ProcessControlClient<'a, R> {
+    | -------------------------------------------------- method in this implementation
+...
+234 |     pub(crate) async fn launch_with_options(
+    |                         ^^^^^^^^^^^^^^^^^^^
+
+warning: function `remote_timeout_error` is never used
+  --> vendor/idevice/src/services/dvt/remote_server.rs:89:4
+   |
+89 | fn remote_timeout_error(timeout: std::time::Duration) -> IdeviceError {
+   |    ^^^^^^^^^^^^^^^^^^^^
+
+warning: variants `Unhandled`, `HandledNoReply`, and `Reply` are never constructed
+   --> vendor/idevice/src/services/dvt/remote_server.rs:173:5
+    |
+172 | pub(crate) enum IncomingHandlerOutcome {
+    |                 ---------------------- variants in this enum
+173 |     Unhandled,
+    |     ^^^^^^^^^
+174 |     HandledNoReply,
+    |     ^^^^^^^^^^^^^^
+175 |     Reply(Vec<u8>),
+    |     ^^^^^
+
+warning: fields `code`, `identifier`, and `remote` are never read
+   --> vendor/idevice/src/services/dvt/remote_server.rs:186:5
+    |
+185 | struct ChannelMetadata {
+    |        --------------- fields in this struct
+186 |     code: i32,
+    |     ^^^^
+187 |     identifier: String,
+    |     ^^^^^^^^^^
+188 |     remote: bool,
+    |     ^^^^^^
+    |
+    = note: `ChannelMetadata` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: field `0` is never read
+   --> vendor/idevice/src/services/dvt/remote_server.rs:200:14
+    |
+200 |     Received(Dictionary),
+    |     -------- ^^^^^^^^^^
+    |     |
+    |     field in this variant
+    |
+    = note: `CapabilityHandshakeState` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+    |
+200 -     Received(Dictionary),
+200 +     Received(()),
+    |
+
+warning: variant `Skipped` is never constructed
+   --> vendor/idevice/src/services/dvt/remote_server.rs:199:5
+    |
+197 | enum CapabilityHandshakeState {
+    |      ------------------------ variant in this enum
+198 |     Pending,
+199 |     Skipped,
+    |     ^^^^^^^
+    |
+    = note: `CapabilityHandshakeState` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+
+warning: multiple associated items are never used
+   --> vendor/idevice/src/services/dvt/remote_server.rs:302:19
+    |
+273 | impl<R: ReadWrite> RemoteServerClient<R> {
+    | ---------------------------------------- associated items in this implementation
+...
+302 |     pub(crate) fn disconnect_waiter(&self) -> impl Future<Output = ()> + Send + 'static
+    |                   ^^^^^^^^^^^^^^^^^
+...
+316 |     pub(crate) async fn supported_identifiers(&self) -> Option<Dictionary> {
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+...
+324 |     pub(crate) async fn wait_for_capabilities(
+    |                         ^^^^^^^^^^^^^^^^^^^^^
+...
+356 |     pub(crate) async fn perform_handshake(
+    |                         ^^^^^^^^^^^^^^^^^
+...
+464 |     pub(crate) async fn open_service_channel<'c>(
+    |                         ^^^^^^^^^^^^^^^^^^^^
+...
+476 |     pub(crate) async fn make_proxy_channel<'c>(
+    |                         ^^^^^^^^^^^^^^^^^^
+...
+489 |     pub(crate) async fn open_proxied_service_channel<'c>(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+505 |     pub(crate) fn accept_owned_channel(&self, code: i32) -> OwnedChannel<R> {
+    |                   ^^^^^^^^^^^^^^^^^^^^
+...
+520 |     pub(crate) async fn register_incoming_channel_initializer<F, Fut>(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+563 |     pub(crate) async fn wait_for_registered_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+595 |     pub(crate) async fn wait_for_service_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+605 |     pub(crate) async fn wait_for_proxied_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+646 |     pub(crate) async fn wait_for_proxied_service_channel_code(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+657 |     async fn find_registered_channel_code(
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+670 |     async fn find_registered_proxied_channel_code(
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+696 |     fn parse_dtxproxy_identifier(identifier: &str, remote_channel: bool) -> Option<(&str, &str)> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: method `detach` is never used
+    --> vendor/idevice/src/services/dvt/remote_server.rs:1300:19
+     |
+1298 | impl<R: ReadWrite> Channel<'_, R> {
+     | --------------------------------- method in this implementation
+1299 |     /// Converts this borrowed channel handle into an owned/shared one.
+1300 |     pub(crate) fn detach(&self) -> OwnedChannel<R> {
+     |                   ^^^^^^
+
+warning: methods `read_message_timeout`, `call_method_with_reply`, `set_incoming_handler`, `clear_incoming_handler`, and `send_raw_reply_for` are never used
+    --> vendor/idevice/src/services/dvt/remote_server.rs:1387:25
+     |
+1357 | impl<R: ReadWrite + 'static> OwnedChannel<R> {
+     | -------------------------------------------- methods in this implementation
+...
+1387 |     pub(crate) async fn read_message_timeout(
+     |                         ^^^^^^^^^^^^^^^^^^^^
+...
+1417 |     pub(crate) async fn call_method_with_reply(
+     |                         ^^^^^^^^^^^^^^^^^^^^^^
+...
+1459 |     pub(crate) async fn set_incoming_handler<F, Fut>(&mut self, handler: F)
+     |                         ^^^^^^^^^^^^^^^^^^^^
+...
+1473 |     pub(crate) async fn clear_incoming_handler(&mut self) {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^
+...
+1478 |     pub(crate) async fn send_raw_reply_for(
+     |                         ^^^^^^^^^^^^^^^^^^
+
+warning: unused variable: `pin_callback`
+   --> vendor/idevice-ffi/src/tunnel_provider.rs:832:5
+    |
+832 |     pin_callback: Option<extern "C" fn(context: *mut c_void) -> *const c_char>,
+    |     ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_pin_callback`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused variable: `ctx`
+   --> vendor/idevice-ffi/src/tunnel_provider.rs:872:9
+    |
+872 |     let ctx = PinCtx(pin_context);
+    |         ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
+
+warning: unused variable: `pin_callback`
+   --> vendor/idevice-ffi/src/tunnel_provider.rs:962:5
+    |
+962 |     pin_callback: Option<extern "C" fn(context: *mut c_void) -> *const c_char>,
+    |     ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_pin_callback`
+
+warning: unused variable: `ctx`
+    --> vendor/idevice-ffi/src/tunnel_provider.rs:1002:9
+     |
+1002 |     let ctx = PinCtx(pin_context);
+     |         ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
+
+warning: `idevice` (lib) generated 11 warnings
+warning: `idevice-ffi` (lib) generated 4 warnings (run `cargo fix --lib -p idevice-ffi` to apply 4 suggestions)
+   Compiling airlift_ffi v0.1.0 (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/rust-core)
+warning: value assigned to `last_error` is never read
+   --> src/exploit.rs:199:21
+    |
+199 |                     last_error = err_msg;
+    |                     ^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: value assigned to `last_error` is never read
+   --> src/exploit.rs:204:21
+    |
+204 |                     last_error = err_msg;
+    |                     ^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: function `write_tree_zip` is never used
+   --> src/carrier_data.rs:373:8
+    |
+373 | pub fn write_tree_zip(path: &Path, tree: &Tree) -> Result<(), String> {
+    |        ^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `DeviceInfo` is never constructed
+   --> src/carrier_data.rs:620:12
+    |
+620 | pub struct DeviceInfo {
+    |            ^^^^^^^^^^
+
+warning: function `validate_device_info` is never used
+   --> src/carrier_data.rs:630:8
+    |
+630 | pub fn validate_device_info(info: &plist::Dictionary) -> Result<DeviceInfo, String> {
+    |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `bundle`, `version`, `supported_sims`, and `hardware_supported` are never read
+   --> src/carrier_data.rs:658:9
+    |
+656 | pub struct Trigger {
+    |            ------- fields in this struct
+657 |     pub filename: String,
+658 |     pub bundle: String,
+    |         ^^^^^^
+659 |     pub version: String,
+    |         ^^^^^^^
+...
+663 |     pub supported_sims: Vec<String>,
+    |         ^^^^^^^^^^^^^^
+664 |     pub hardware_supported: bool,
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: `Trigger` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: `airlift_ffi` (lib test) generated 6 warnings
+    Finished `release` profile [optimized] target(s) in 3m 34s
+     Running unittests src/lib.rs (build/host-tests/release/deps/airlift_ffi-22dd6864f77bb745)
+
+running 57 tests
+test carrier::tests::destination_names_cannot_escape_media ... ok
+test carrier::tests::errors_do_not_expose_full_imsi ... ok
+test carrier::tests::finished_catalog_is_not_rolled_back_for_books_failure ... ok
+test carrier::tests::interrupted_books_resume_accepts_only_known_object_values ... ok
+test carrier::tests::pending_recovery_knows_exact_three_owned_ids ... ok
+test carrier::tests::pre_export_failure_needs_only_media_cleanup ... ok
+test carrier::tests::unhashed_local_backup_never_authorizes_recovery ... ok
+test carrier::transport_tests::appended_bytes_after_read_are_detected_by_second_stat ... ok
+test carrier::transport_tests::complete_file_reads_exactly_size_without_afc_eof_probe ... ok
+test carrier::transport_tests::direct_file_read_refuses_symlink_without_opening_it ... ok
+test carrier::transport_tests::empty_file_does_not_issue_zero_byte_or_eof_read ... ok
+test carrier::transport_tests::remote_catalogue_preserves_symlink_bytes_without_following_target ... ok
+test carrier::transport_tests::symbolic_link_catalogue_root_is_rejected_without_traversal ... ok
+test carrier::transport_tests::truncated_file_is_rejected_and_its_handle_is_closed ... ok
+test carrier_data::tests::backup_roundtrip_preserves_types_links_hidden_files_and_non_ascii ... ok
+test carrier::tests::interrupted_export_is_never_treated_as_no_change ... ok
+test carrier::tests::interrupted_books_resume_cannot_discard_new_file ... ok
+test carrier_data::tests::corrupt_zip_crc_is_rejected ... ok
+test carrier_data::tests::duplicate_slot_and_imsi_and_invalid_selection_are_rejected ... ok
+test carrier_data::tests::duplicate_zip_entries_are_rejected ... ok
+test carrier_data::tests::crc_uses_standard_zip_polynomial ... ok
+test carrier_data::tests::limits_reject_large_counts_depth_and_data ... ok
+test carrier_data::tests::bundled_assets_and_trigger_exclusions_match_original ... ok
+test carrier_data::tests::plan_changes_only_selected_imsi_and_refuses_file_collision ... ok
+test carrier_data::tests::profile_names_cannot_escape_fixed_system_directory ... ok
+test carrier_data::tests::public_sim_does_not_serialize_complete_imsi ... ok
+test carrier_data::tests::restore_removes_only_root_imsi_symlinks ... ok
+test carrier_data::tests::sims_require_complete_identifiers_and_correct_prefix ... ok
+test carrier_data::tests::staged_system_links_must_name_one_bundle ... ok
+test carrier_data::tests::staging_preserves_payload_and_contains_safe_resolution_scaffold ... ok
+test carrier_data::tests::tree_hash_matches_desktop_python_and_unicode_escaping ... ok
+test carrier_data::tests::yaml_subset_preserves_leading_zero_network_and_rejects_duplicates ... ok
+test carrier_recovery::tests::mixed_manifest_preserves_new_and_previous_user_rows ... ok
+test carrier_recovery::tests::normal_catalog_keeps_current_unrelated_additions_and_deletions ... ok
+test carrier_data::tests::missing_or_ambiguous_logs_do_not_confirm_signature ... ok
+test carrier_data::tests::missing_parent_and_invalid_symlink_are_rejected ... ok
+test carrier_data::tests::paths_cannot_escape_or_traverse_links ... ok
+test carrier_recovery::tests::sqlite_triggers_stop_recovery_before_any_original_bytes_change ... ok
+test carrier_recovery::tests::sqlite_wal_cleanup_removes_exact_owned_rows_and_preserves_new_user_data ... ok
+test carrier_recovery::tests::unrelated_recovery_targets_and_ambiguous_references_are_rejected ... ok
+test carrier_trigger::tests::commcenter_capture_is_filtered_and_never_serialized ... ok
+test carrier_trigger::tests::multiline_commcenter_record_keeps_continuation_fields ... ok
+test carrier_trigger::tests::only_own_generated_staging_paths_are_accepted ... ok
+test carrier_trigger::tests::overlong_lines_do_not_leak_suffixes_or_grow_without_bound ... ok
+test carrier_trigger::tests::readback_does_not_probe_past_afc_eof_or_read_empty_files ... ok
+test carrier_trigger::tests::readback_rejects_shrink_and_concurrent_modification ... ok
+test carrier_trigger::tests::relative_path_rejects_traversal_and_protocol_delimiters ... ok
+test carrier_recovery::tests::unrelated_manifest_changes_are_not_replaced_and_only_new_empty_locks_drop ... ok
+test device_target::tests::identity_change_or_missing_check_prevents_write ... ok
+test device_target::tests::public_loopback_and_invalid_destinations_are_rejected ... ok
+test device_target::tests::remote_destination_is_exclusive ... ok
+test carrier_recovery::tests::synthetic_manifest_restores_exact_original_bytes ... ok
+test installer::tests::every_extension_requires_provisioning ... ok
+test installer::tests::minimum_ios_uses_numeric_comparison ... ok
+test installer::tests::traversal_and_multiple_apps_are_rejected ... ok
+test installer::tests::unsigned_package_is_rejected_before_network ... ok
+test installer::tests::signed_structure_is_only_a_preflight ... ok
+
+test result: ok. 57 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

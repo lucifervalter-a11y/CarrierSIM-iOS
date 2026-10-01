@@ -1,0 +1,54 @@
+{
+  "llvm_base_url": "https://apt.llvm.org/noble/",
+  "llvm_packages": [
+    {
+      "Package": "clang-20",
+      "Version": "1:20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139",
+      "Filename": "pool/main/l/llvm-toolchain-20/clang-20_20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139_amd64.deb",
+      "SHA256": "b3478e87705e68850d5cceeeb85ad64fff78ed0cb05a9fe7f0648ccf88c5b1f3"
+    },
+    {
+      "Package": "libclang-common-20-dev",
+      "Version": "1:20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139",
+      "Filename": "pool/main/l/llvm-toolchain-20/libclang-common-20-dev_20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139_amd64.deb",
+      "SHA256": "7a945a2c284f50328fcacb34b3f507264d7bbba9fda22354cb1de61959f5265b"
+    },
+    {
+      "Package": "libclang-cpp20",
+      "Version": "1:20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139",
+      "Filename": "pool/main/l/llvm-toolchain-20/libclang-cpp20_20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139_amd64.deb",
+      "SHA256": "4c3ea6fe4b459ba8c154a9a0f841500b4ddda341bfd55e32548eb1275c0f36b1"
+    },
+    {
+      "Package": "libllvm20",
+      "Version": "1:20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139",
+      "Filename": "pool/main/l/llvm-toolchain-20/libllvm20_20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139_amd64.deb",
+      "SHA256": "d9be126777d635a040d1b3627dd14b04dc10573c46fd8d00b3a7632e5de0d0fc"
+    },
+    {
+      "Package": "lld-20",
+      "Version": "1:20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139",
+      "Filename": "pool/main/l/llvm-toolchain-20/lld-20_20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139_amd64.deb",
+      "SHA256": "918f0c33cfb4a177cd30a69422db4618886f6b5478e20897b0ae99fd622107ce"
+    },
+    {
+      "Package": "llvm-20",
+      "Version": "1:20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139",
+      "Filename": "pool/main/l/llvm-toolchain-20/llvm-20_20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139_amd64.deb",
+      "SHA256": "48911311c972fa02d2d20978d0f7b8360f1681fbd0308560bdc06632583e60e5"
+    },
+    {
+      "Package": "llvm-20-linker-tools",
+      "Version": "1:20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139",
+      "Filename": "pool/main/l/llvm-toolchain-20/llvm-20-linker-tools_20.1.8~++20250804090239+87f0227cb601-1~exp1~20250804210352.139_amd64.deb",
+      "SHA256": "c11f46cbd732b3c4e0aa9df8c964f7b96b93b7b3a9e8a4dd939182d0282fc5f9"
+    }
+  ],
+  "rust_version": "1.98.1",
+  "sdk_repository": "https://github.com/theos/sdks.git",
+  "sdk_revision": "0222fd5413cf4b9af096f37b4621afa2688572f7",
+  "sdk_directory": "iPhoneOS16.5.sdk",
+  "sdk_reported_version": "16.4",
+  "ldid_url": "https://github.com/ProcursusTeam/ldid/releases/download/v2.1.5-procursus7/ldid_linux_x86_64",
+  "ldid_sha256": "4b8862b2fefa2cd7fa8f88cb0310779619aeaa8c72d6aff22f019b470f2fa99a"
+}

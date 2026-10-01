@@ -1,0 +1,5 @@
+toolchain/
+CarrierSIM-iOS/build/
+__pycache__/
+*.pyc
+.DS_Store

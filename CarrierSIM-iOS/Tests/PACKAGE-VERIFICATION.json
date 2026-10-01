@@ -1,0 +1,90 @@
+[
+  {
+    "app": {
+      "architecture": "arm64",
+      "platform": "iOS device",
+      "bytes": 8227232,
+      "dependencies": [
+        "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+        "/usr/lib/libobjc.A.dylib",
+        "/System/Library/Frameworks/UIKit.framework/UIKit",
+        "/System/Library/Frameworks/Security.framework/Security",
+        "/System/Library/Frameworks/Network.framework/Network",
+        "/System/Library/Frameworks/NetworkExtension.framework/NetworkExtension",
+        "/System/Library/Frameworks/UserNotifications.framework/UserNotifications",
+        "/System/Library/Frameworks/AVFoundation.framework/AVFoundation",
+        "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+        "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+        "/System/Library/Frameworks/SystemConfiguration.framework/SystemConfiguration",
+        "/usr/lib/libc++.1.dylib",
+        "/usr/lib/libz.1.dylib",
+        "/usr/lib/libsqlite3.dylib",
+        "/usr/lib/libresolv.9.dylib",
+        "/usr/lib/libiconv.2.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "entitlements": {
+        "com.apple.developer.networking.networkextension": [
+          "packet-tunnel-provider"
+        ]
+      }
+    },
+    "extension": {
+      "architecture": "arm64",
+      "platform": "iOS device",
+      "bytes": 73136,
+      "dependencies": [
+        "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+        "/usr/lib/libobjc.A.dylib",
+        "/System/Library/Frameworks/NetworkExtension.framework/NetworkExtension",
+        "/System/Library/Frameworks/Network.framework/Network",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "entitlements": {
+        "com.apple.developer.networking.networkextension": [
+          "packet-tunnel-provider"
+        ]
+      }
+    },
+    "filename": "CarrierSIM-iOS-unsigned.ipa",
+    "sha256": "86691e320d158fec760f4f7e72995009f2a5072e4e400feedbe3cb4c819444ab",
+    "ipa_bytes": 3695703,
+    "external_vpn": false,
+    "physical_device_tested": false
+  },
+  {
+    "app": {
+      "architecture": "arm64",
+      "platform": "iOS device",
+      "bytes": 8227024,
+      "dependencies": [
+        "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+        "/usr/lib/libobjc.A.dylib",
+        "/System/Library/Frameworks/UIKit.framework/UIKit",
+        "/System/Library/Frameworks/Security.framework/Security",
+        "/System/Library/Frameworks/Network.framework/Network",
+        "/System/Library/Frameworks/NetworkExtension.framework/NetworkExtension",
+        "/System/Library/Frameworks/UserNotifications.framework/UserNotifications",
+        "/System/Library/Frameworks/AVFoundation.framework/AVFoundation",
+        "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+        "/System/Library/Frameworks/UniformTypeIdentifiers.framework/UniformTypeIdentifiers",
+        "/System/Library/Frameworks/SystemConfiguration.framework/SystemConfiguration",
+        "/usr/lib/libc++.1.dylib",
+        "/usr/lib/libz.1.dylib",
+        "/usr/lib/libsqlite3.dylib",
+        "/usr/lib/libresolv.9.dylib",
+        "/usr/lib/libiconv.2.dylib",
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "entitlements": {}
+    },
+    "filename": "CarrierSIM-iOS-external-vpn.ipa",
+    "sha256": "94462f0e8c644a476e53b16b58e6523ae1db585df48fcf3b4e390cb6cf46fc92",
+    "ipa_bytes": 3688254,
+    "external_vpn": true,
+    "physical_device_tested": false
+  }
+]
