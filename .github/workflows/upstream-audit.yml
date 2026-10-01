@@ -1,0 +1,44 @@
+name: Prepare pinned upstream sources
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/upstream-audit.yml'
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch the recorded AirCard revision for source comparison
+        shell: python
+        run: |
+          import io, json, pathlib, tarfile, urllib.request, zipfile, hashlib
+          revision = '097a058c984ffc33ccb697b9dfe8058be3e86244'
+          url = 'https://codeload.github.com/Mak5er/AirCard-iOS/tar.gz/' + revision
+          request = urllib.request.Request(url, headers={'User-Agent': 'CarrierSIM-source-audit'})
+          with urllib.request.urlopen(request, timeout=120) as response:
+              archive = response.read(200 * 1024 * 1024)
+          root = pathlib.Path('audit'); root.mkdir()
+          manifest = {'repository': 'https://github.com/Mak5er/AirCard-iOS', 'revision': revision, 'files': {}}
+          with tarfile.open(fileobj=io.BytesIO(archive), mode='r:gz') as source, zipfile.ZipFile(root / 'upstream-source.zip', 'w', zipfile.ZIP_DEFLATED) as out:
+              for member in source.getmembers():
+                  parts = pathlib.PurePosixPath(member.name).parts
+                  if len(parts) < 2 or not member.isfile():
+                      continue
+                  relative = pathlib.PurePosixPath(*parts[1:])
+                  if '..' in relative.parts or member.size > 3 * 1024 * 1024:
+                      continue
+                  if not str(relative).startswith(('rust-core/', 'ios-app/')) and str(relative) not in ('LICENSE', 'README.md'):
+                      continue
+                  data = source.extractfile(member).read()
+                  out.writestr(str(relative), data)
+                  manifest['files'][str(relative)] = hashlib.sha256(data).hexdigest()
+          (root / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          print('Recorded', len(manifest['files']), 'upstream source files; no user keys or pairing records are involved.')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pinned-upstream-source-audit
+          path: audit/
+          retention-days: 7
