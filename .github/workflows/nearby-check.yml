@@ -1,0 +1,27 @@
+name: Check nearby assistance module
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'App/CSNearbyViewController.*'
+      - 'Tests/check_nearby.sh'
+      - 'Tests/nearby_protocol_test.m'
+      - '.github/workflows/nearby-check.yml'
+  pull_request:
+    paths:
+      - 'App/CSNearbyViewController.*'
+      - 'Tests/check_nearby.sh'
+      - 'Tests/nearby_protocol_test.m'
+      - '.github/workflows/nearby-check.yml'
+permissions:
+  contents: read
+jobs:
+  module-check:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test actual protocol parser and type-check UIKit source
+        run: bash Tests/check_nearby.sh
+      - name: State verification boundary
+        run: echo 'This validates the nearby module only. It does not build an IPA or test pairing, radio transport, or carrier changes on a physical iPhone.'
