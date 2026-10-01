@@ -1,0 +1,217 @@
+--- a/App/CSMainViewController.m
++++ b/App/CSMainViewController.m
+@@ -1,5 +1,6 @@
+ #import "CSMainViewController.h"
+ #import "CSConnectionManager.h"
++#import "CSNearbyViewController.h"
+ #import "airlift.h"
+ #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+ 
+@@ -35,6 +36,7 @@
+ @property (nonatomic, copy) NSString *pairingPIN;
+ @property (nonatomic) NSInteger SIMSelection;
+ @property (nonatomic) BOOL busy;
++@property (nonatomic, copy) void (^nearbyCompletion)(int32_t code, NSDictionary *result);
+ @property (nonatomic) BOOL connectionChecked;
+ @property (nonatomic) BOOL needsRecovery;
+ @property (nonatomic) UIBackgroundTaskIdentifier backgroundTask;
+@@ -54,6 +56,7 @@
+ - (void)viewDidLoad {
+     [super viewDidLoad];
+     self.title = @"CarrierSIM";
++    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Другой iPhone" style:UIBarButtonItemStylePlain target:self action:@selector(showNearby)];
+     self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
+     self.tableView.estimatedRowHeight = 72;
+     self.tableView.rowHeight = UITableViewAutomaticDimension;
+@@ -88,7 +91,7 @@
+     };
+     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(becameActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+     [self buildHeader];
+-    [self appendLog:@"CarrierSIM 1.0 • iOS-приложение. Диагностика не содержит ключей сопряжения."];
++    [self appendLog:@"CarrierSIM 1.1 • iOS-приложение. Диагностика не содержит ключей сопряжения."];
+ }
+ 
+ - (void)dealloc { [NSNotificationCenter.defaultCenter removeObserver:self]; }
+@@ -150,7 +153,7 @@
+     if (section == 0) return @"Сопряжение создаётся один раз. Разрешения на локальную сеть, VPN и сопряжение подтверждаются в iOS.";
+     if (section == 1) return @"По умолчанию выбран Vodafone_hu, как в твоём архиве. Это выбор настроек iPhone; тариф и SIM не меняются.";
+     if (section == 2) return self.busy ? @"Идёт операция. Оставь CarrierSIM открытым и не отключай локальное VPN-подключение." : @"Перед записью создаётся копия. «Штатные профили» удаляет IMSI-ссылки для всех SIM. «Восстановление» завершает прерванную операцию.";
+-    if (section == 4) return @"CarrierSIM 1.0 · На основе твоего CarrierSIM v4, AirLift, AirCard-iOS и idevice. Локальный VPN использует код LocalDevVPN (SideStore Team).";
++    if (section == 4) return @"CarrierSIM 1.1 · На основе твоего CarrierSIM v4, AirLift, AirCard-iOS и idevice. Локальный VPN использует код LocalDevVPN (SideStore Team).";
+     return nil;
+ }
+ 
+@@ -459,7 +462,11 @@
+     if (compatibility.length) self.lastMessage = [self.lastMessage stringByAppendingFormat:@"\n%@", compatibility];
+     [self appendLog:self.lastMessage];
+     [self.tableView reloadData];
+-    if (!isStatus) [self message:code == 0 ? @"Операция завершена" : (code == 2 ? @"Нужна проверка" : @"Операция остановлена") text:self.lastMessage];
++    if (self.nearbyCompletion) {
++        void (^completion)(int32_t, NSDictionary *) = self.nearbyCompletion;
++        self.nearbyCompletion = nil;
++        completion(code, result ?: @{});
++    } else if (!isStatus) [self message:code == 0 ? @"Операция завершена" : (code == 2 ? @"Нужна проверка" : @"Операция остановлена") text:self.lastMessage];
+ }
+ 
+ - (void)appendLog:(NSString *)line {
+@@ -506,7 +513,9 @@
+     [self showText:@"ПЕРВЫЙ ЗАПУСК\n\n1. Разреши CarrierSIM доступ к локальной сети.\n\n2. Нажми «Сопряжение с iPhone» → «Создать сопряжение». Затем открой настройки iOS → Конфиденциальность и безопасность → Режим разработчика → Сопряжение с CarrierSIM. Если режим разработчика выключен, сначала включи его и выполни предложенную iOS перезагрузку. Код появится в уведомлении и в CarrierSIM. Подтверди его и вернись в приложение. Если время вышло, создай сопряжение заново.\n\nВместо этого можно импортировать готовый файл из Stik Pair или файл сопряжения с компьютера.\n\n3. Нажми «Локальное подключение» → «Включить встроенный VPN» и подтверди разрешение iOS. Для встроенного VPN нужны поддерживаемые подпись и профиль приложения. Если твой способ подписи не поддерживает VPN-расширение, используй LocalDevVPN.\n\n4. Нажми «Проверить iPhone». Выбери SIM и профиль. По умолчанию стоит Vodafone_hu. После изменения выбора снова проверь iPhone.\n\n5. Нажми «Применить профиль». Дождись результата, не сворачивая приложение.\n\nПРОВЕРКА ВЫЗОВОВ ПО WI-FI\n\nОткрой настройки iOS → Сотовая связь → нужная SIM → Вызовы по Wi-Fi. Включи их, если переключатель появился. Включи авиарежим, затем Wi-Fi, дождись отметки Wi-Fi у оператора и проверь звонок. После проверки выключи авиарежим.\n\nИзменение профиля не гарантирует VoWiFi, EVS или 5G: это зависит от оператора, SIM, модели и версии iOS.\n\nЕСЛИ ЧТО-ТО ПРЕРВАЛОСЬ\n\nВключи локальное подключение и выбери «Восстановить после сбоя». Не удаляй приложение: резервные копии хранятся внутри него.\n\n«Вернуть штатные профили» удаляет все корневые IMSI-ссылки такого типа, сохраняя файлы операторов. Это действие относится ко всем SIM.\n\nСОВМЕСТИМОСТЬ\n\nЭкспериментальная сборка для iOS 27. Исходный CarrierSIM проверялся автором на iOS 27.0. Работа этой сборки на твоём устройстве ещё требует проверки. Обновления iOS могут изменить доступ к службам.\n\nПРИВАТНОСТЬ\n\nНет сервера и аналитики. Сопряжение, ключи и резервные копии остаются внутри приложения. Экспорт журнала не включает файлы сопряжения и копии каталога." title:@"Как пользоваться" share:NO];
+ }
+ - (void)showLicenses {
+-    NSMutableString *text = [NSMutableString stringWithString:@"CarrierSIM для iOS\nВерсия 1.0\n\nПеренос CarrierSIM v4 из предоставленного архива. Интерфейс, сопряжение и локальное подключение встроены.\n\nИспользуется код:\n• AirCard-iOS — https://github.com/Mak5er/AirCard-iOS\n• AirLift — https://github.com/0xjohnnydev/airlift\n• idevice — https://github.com/jkcoxson/idevice\n• LocalDevVPN (SideStore Team): встроенный локальный туннель основан на коде этого проекта — https://github.com/jkcoxson/LocalDevVPN\n\nСовместим с файлами Stik Pair — https://github.com/StikDebug/StikPair\n\nЭто самостоятельная производная сборка CarrierSIM, не официальный выпуск перечисленных проектов.\n\n"];
++    NSMutableString *text = [NSMutableString stringWithString:@"CarrierSIM для iOS\nВерсия 1.1\n\nПеренос CarrierSIM v4 из предоставленного архива. Интерфейс, сопряжение и локальное подключение встроены.\n\nОригинал CarrierSIM, carrier.py и редактируемый bundle.yaml:\nhttps://github.com/ios-bundles/CarrierSIM\n\nИспользуется код:\n• AirCard-iOS — https://github.com/Mak5er/AirCard-iOS\n• AirLift — https://github.com/0xjohnnydev/airlift\n• idevice — https://github.com/jkcoxson/idevice\n• LocalDevVPN (SideStore Team): встроенный локальный туннель основан на коде этого проекта — https://github.com/jkcoxson/LocalDevVPN\n\nСовместим с файлами Stik Pair — https://github.com/StikDebug/StikPair\n\nЭто самостоятельная производная сборка CarrierSIM, не официальный выпуск перечисленных проектов.\n\n"];
++    NSString *credits = [NSString stringWithContentsOfFile:[NSBundle.mainBundle pathForResource:@"CREDITS" ofType:@"md"] encoding:NSUTF8StringEncoding error:nil];
++    if (credits) [text appendFormat:@"\n%@\n", credits];
+     NSArray *files = [NSFileManager.defaultManager contentsOfDirectoryAtPath:[NSBundle.mainBundle.bundlePath stringByAppendingPathComponent:@"Licenses"] error:nil];
+     for (NSString *file in [files sortedArrayUsingSelector:@selector(compare:)]) {
+         NSString *path = [[NSBundle.mainBundle.bundlePath stringByAppendingPathComponent:@"Licenses"] stringByAppendingPathComponent:file];
+@@ -515,4 +524,52 @@
+     }
+     [self showText:text title:@"Компоненты" share:NO];
+ }
++
++// Nearby never receives a pairing record, file path, backup or raw engine JSON.
++- (BOOL)canAcceptNearby {
++    return !self.busy && !self.connection.isPairing && !self.connection.isImporting && self.connection.hasPairing &&
++        !self.needsRecovery && [NSBundle.mainBundle pathForResource:@"assets" ofType:@"zip"] != nil;
++}
++- (NSDictionary *)nearbyResult:(NSDictionary *)result code:(int32_t)code {
++    NSUInteger count = [result[@"sims"] isKindOfClass:NSArray.class] ? [result[@"sims"] count] :
++        ([self.snapshot[@"sims"] isKindOfClass:NSArray.class] ? [self.snapshot[@"sims"] count] : 0);
++    return @{@"ok":@(code == 0 && ![result[@"needs_recovery"] boolValue] && ![result[@"rolled_back"] boolValue]),
++             @"catalog":@([result[@"catalog_verified"] boolValue]),
++             @"confirmed":@([result[@"commcenter_verified"] boolValue]),
++             @"recovery":@([result[@"needs_recovery"] boolValue]), @"sims":@(MIN(8, count))};
++}
++- (void)showNearby {
++    if (self.busy || self.connection.isPairing || self.connection.isImporting || self.presentedViewController) return;
++    CSNearbyViewController *nearby = [[CSNearbyViewController alloc] initWithStyle:UITableViewStyleInsetGrouped];
++    __weak typeof(self) weakSelf = self;
++    nearby.canReceive = ^BOOL { return [weakSelf canAcceptNearby]; };
++    nearby.executeRequest = ^(NSDictionary *request, BOOL (^stillAuthorized)(void), void (^reply)(NSDictionary *)) {
++        CSMainViewController *owner = weakSelf;
++        if (!owner || ![owner canAcceptNearby] || !stillAuthorized()) { reply(@{@"ok":@NO}); return; }
++        NSString *action = request[@"action"];
++        owner.bundleName = request[@"bundle"];
++        owner.SIMSelection = [request[@"sim"] integerValue];
++        owner.connectionChecked = NO; owner.snapshot = nil;
++        // Fresh read-only preflight for every owner-approved request. There is no
++        // automatic retry, and consent is checked again before a new write starts.
++        owner.nearbyCompletion = ^(int32_t code, NSDictionary *result) {
++            CSMainViewController *controller = weakSelf;
++            if (!controller) { reply(@{@"ok":@NO}); return; }
++            if ([action isEqualToString:@"status"]) { reply([controller nearbyResult:result code:code]); return; }
++            if (code != 0 || ![controller canAcceptNearby] || !stillAuthorized() ||
++                ([action isEqualToString:@"apply"] && ![result[@"can_apply"] boolValue])) {
++                reply([controller nearbyResult:result code:1]); return;
++            }
++            controller.nearbyCompletion = ^(int32_t finalCode, NSDictionary *finalResult) {
++                CSMainViewController *finisher = weakSelf;
++                reply(finisher ? [finisher nearbyResult:finalResult code:finalCode] : @{@"ok":@NO});
++            };
++            [controller runAction:action];
++        };
++        [owner runAction:@"status"];
++    };
++    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:nearby];
++    navigation.modalInPresentation = YES; // Closing explicitly stops advertising/session.
++    [self presentViewController:navigation animated:YES completion:nil];
++}
+ @end
+--- a/App/Info.plist
++++ b/App/Info.plist
+@@ -19,9 +19,9 @@
+ 	<key>CFBundlePackageType</key>
+ 	<string>APPL</string>
+ 	<key>CFBundleShortVersionString</key>
+-	<string>1.0.0</string>
++	<string>1.1.0</string>
+ 	<key>CFBundleVersion</key>
+-	<string>1</string>
++	<string>2</string>
+ 	<key>CFBundleInfoDictionaryVersion</key>
+ 	<string>6.0</string>
+ 	<key>LSRequiresIPhoneOS</key>
+@@ -43,11 +43,12 @@
+ 		<string>UIInterfaceOrientationPortrait</string>
+ 	</array>
+ 	<key>NSLocalNetworkUsageDescription</key>
+-	<string>CarrierSIM подключается к службам этого iPhone и создаёт сопряжение на устройстве.</string>
++	<string>CarrierSIM создаёт сопряжение с этим iPhone и ищет рядом другие устройства CarrierSIM для помощи с подтверждением владельца.</string>
+ 	<key>NSBonjourServices</key>
+ 	<array>
+ 		<string>_remotepairing-pairable-host._tcp</string>
+ 		<string>_carriersim-local._tcp</string>
++		<string>_carriersim-help._tcp</string>
+ 	</array>
+ 	<key>LSApplicationQueriesSchemes</key>
+ 	<array>
+--- a/Tunnel/Info.plist
++++ b/Tunnel/Info.plist
+@@ -2,19 +2,30 @@
+ <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ <plist version="1.0">
+ <dict>
+-    <key>CFBundleDevelopmentRegion</key><string>ru</string>
+-    <key>CFBundleDisplayName</key><string>CarrierSIM Local</string>
+-    <key>CFBundleExecutable</key><string>CarrierSIMTunnel</string>
+-    <key>CFBundleIdentifier</key><string>com.tema.CarrierSIM.Tunnel</string>
+-    <key>CFBundleName</key><string>CarrierSIMTunnel</string>
+-    <key>CFBundlePackageType</key><string>XPC!</string>
+-    <key>CFBundleShortVersionString</key><string>1.0</string>
+-    <key>CFBundleVersion</key><string>1</string>
+-    <key>MinimumOSVersion</key><string>18.0</string>
+-    <key>NSExtension</key>
+-    <dict>
+-        <key>NSExtensionPointIdentifier</key><string>com.apple.networkextension.packet-tunnel</string>
+-        <key>NSExtensionPrincipalClass</key><string>PacketTunnelProvider</string>
+-    </dict>
++	<key>CFBundleDevelopmentRegion</key>
++	<string>ru</string>
++	<key>CFBundleDisplayName</key>
++	<string>CarrierSIM Local</string>
++	<key>CFBundleExecutable</key>
++	<string>CarrierSIMTunnel</string>
++	<key>CFBundleIdentifier</key>
++	<string>com.tema.CarrierSIM.Tunnel</string>
++	<key>CFBundleName</key>
++	<string>CarrierSIMTunnel</string>
++	<key>CFBundlePackageType</key>
++	<string>XPC!</string>
++	<key>CFBundleShortVersionString</key>
++	<string>1.1.0</string>
++	<key>CFBundleVersion</key>
++	<string>2</string>
++	<key>MinimumOSVersion</key>
++	<string>18.0</string>
++	<key>NSExtension</key>
++	<dict>
++		<key>NSExtensionPointIdentifier</key>
++		<string>com.apple.networkextension.packet-tunnel</string>
++		<key>NSExtensionPrincipalClass</key>
++		<string>PacketTunnelProvider</string>
++	</dict>
+ </dict>
+ </plist>
+--- a/scripts/build-linux.sh
++++ b/scripts/build-linux.sh
+@@ -70,7 +70,7 @@
+   -framework Foundation -framework UIKit -framework Security
+   -framework CoreFoundation -framework Network -framework NetworkExtension
+   -framework UserNotifications -framework AVFoundation
+-  -framework UniformTypeIdentifiers -framework SystemConfiguration
++  -framework UniformTypeIdentifiers -framework SystemConfiguration -framework MultipeerConnectivity
+ )
+ shopt -s nullglob
+ APP_SOURCES=("$PROJECT_ROOT"/App/*.m)
+--- a/scripts/build-macos.sh
++++ b/scripts/build-macos.sh
+@@ -55,7 +55,7 @@
+ "$IOS_CLANG" "${COMMON_FLAGS[@]}" "${APP_SOURCES[@]}" "$RUST_LIBRARY" \
+   -framework Foundation -framework UIKit -framework Security -framework CoreFoundation \
+   -framework Network -framework NetworkExtension -framework UserNotifications \
+-  -framework AVFoundation -framework UniformTypeIdentifiers -framework SystemConfiguration \
++  -framework AVFoundation -framework UniformTypeIdentifiers -framework SystemConfiguration -framework MultipeerConnectivity \
+   -lc++ -lz -lsqlite3 -lresolv -liconv \
+   -Wl,-u,_ALGetGrappaToken -Wl,-exported_symbol,_ALGetGrappaToken \
+   -Wl,-exported_symbol,_cs_execute -Wl,-exported_symbol,_al_pairing_cancel_host \
