@@ -4,3 +4,6 @@
 9a5b92f030da8c6b3a8cfd148d1816381b5ee9de5fd5979fa22ad8569834df63  CarrierSIM-1.2-LAN.zip
 528d259a43af94af9c9d21e65d69e214f21bc811ecde4abbd94684cabbabb785  CarrierSIM-1.2-unsigned.ipa
 bb9dbc8525cb466707c8c493610d1625f9a689ea47a95a8aa9f50f654b8102a5  CarrierSIM-1.2-external-vpn.ipa
+5aa653ec5da88b7c082adabc684acebdd4b91d1cb187db6994359c13a0e6e63f  CarrierSIM-1.2.1-LAN.zip
+970ecdc2e20b1ff4f7d10746bbb06cf022abc4022528e4b33fd4466437590544  CarrierSIM-1.2.1-unsigned.ipa
+e4ea260a53535156dc02ffb3e77f705ec3ad0ef473bbe1d902665add305bbeff  CarrierSIM-1.2.1-external-vpn.ipa
