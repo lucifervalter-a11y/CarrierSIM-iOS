@@ -11,7 +11,7 @@ jobs:
       run: 'sudo apt-get update
 
         sudo apt-get install -y python3 git curl ca-certificates dpkg-dev build-essential
-        xz-utils libedit2 libffi8 libxml2 libzstd1 libtinfo6 zlib1g libsqlite3-dev
+        xz-utils libedit2 libffi8 libxml2 libzstd1 libtinfo6 zlib1g libsqlite3-dev openssl
 
         '
     - uses: actions/cache@v4
@@ -51,7 +51,7 @@ jobs:
         '
     - uses: actions/upload-artifact@v4
       with:
-        name: CarrierSIM-1.1-needs-Apple-signing
+        name: CarrierSIM-1.2-needs-Apple-signing
         path: 'CarrierSIM-iOS/build/*.ipa
 
           CarrierSIM-iOS/build/CarrierSIM-build-manifest.json

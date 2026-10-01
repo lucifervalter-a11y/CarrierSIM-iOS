@@ -423,6 +423,14 @@ impl InstallationProxyClient {
         loop {
             let mut res = self.idevice.read_plist().await?;
 
+            // Some iOS versions return Error without ErrorDescription. Even a
+            // simultaneous Complete status must never turn this into success.
+            if let Some(error) = res.get("Error") {
+                let code=error.as_string().unwrap_or("installation rejected");
+                let description=res.get("ErrorDescription").and_then(plist::Value::as_string).unwrap_or("");
+                return Err(InstallationProxyError::OperationFailed(format!("{code}: {description}")).into());
+            }
+
             if let Some(e) = res.remove("ErrorDescription").and_then(|x| x.into_string()) {
                 return Err(InstallationProxyError::OperationFailed(e.to_string()).into());
             }

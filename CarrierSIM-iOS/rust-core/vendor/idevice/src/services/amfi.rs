@@ -21,6 +21,19 @@ impl IdeviceService for AmfiClient {
 }
 
 impl AmfiClient {
+    fn require_success(res: &plist::Dictionary) -> Result<(), IdeviceError> {
+        if let Some(error) = res.get("Error") {
+            return Err(IdeviceError::UnexpectedResponse(
+                error.as_string().unwrap_or("AMFI returned an error").to_string(),
+            ));
+        }
+        match res.get("success").and_then(plist::Value::as_boolean) {
+            Some(true) => Ok(()),
+            _ => Err(IdeviceError::UnexpectedResponse(
+                "AMFI response has missing, false or non-boolean success".into(),
+            )),
+        }
+    }
     /// Creates a new amfi client from an existing device connection
     ///
     /// # Arguments
@@ -38,13 +51,7 @@ impl AmfiClient {
         self.idevice.send_plist(request).await?;
 
         let res = self.idevice.read_plist().await?;
-        if res.get("success").is_some() {
-            Ok(())
-        } else {
-            Err(IdeviceError::UnexpectedResponse(
-                "missing success key in reveal developer mode response".into(),
-            ))
-        }
+        Self::require_success(&res)
     }
 
     /// Enables developer mode, triggering a reboot on iOS 18+
@@ -55,13 +62,7 @@ impl AmfiClient {
         self.idevice.send_plist(request).await?;
 
         let res = self.idevice.read_plist().await?;
-        if res.get("success").is_some() {
-            Ok(())
-        } else {
-            Err(IdeviceError::UnexpectedResponse(
-                "missing success key in enable developer mode response".into(),
-            ))
-        }
+        Self::require_success(&res)
     }
 
     /// Shows the accept dialogue for enabling developer mode
@@ -72,13 +73,7 @@ impl AmfiClient {
         self.idevice.send_plist(request).await?;
 
         let res = self.idevice.read_plist().await?;
-        if res.get("success").is_some() {
-            Ok(())
-        } else {
-            Err(IdeviceError::UnexpectedResponse(
-                "missing success key in accept developer mode response".into(),
-            ))
-        }
+        Self::require_success(&res)
     }
 
     /// Gets the developer mode status

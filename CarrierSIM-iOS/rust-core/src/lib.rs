@@ -20,6 +20,8 @@ mod carrier_trigger;
 mod carrier_recovery;
 mod device_target;
 mod installer;
+mod developer_mode;
+mod sharing;
 
 /// Execute a CarrierSIM status, apply, restore, or recovery request. The only
 /// non-Media write destination is the device's iPhone carrier catalogue.

@@ -32,6 +32,10 @@ SHA-256 исходного архива: `e60f24a31c13632f04b88fe3b0653b793181de
 
 Ревизии и описание использования перенесены из `SOURCE-PROVENANCE.json` исходного комплекта. Это указание происхождения, а не утверждение, что все перечисленные проекты написаны автором CarrierSIM-iOS.
 
+## Подпись приложения в версии 1.2
+
+Используются опубликованные без изменений `isideload-apple-codesign` 0.29.11 и `isideload-cryptographic-message-syntax` 0.31.1, а также их транзитивные библиотеки `isideload`. Это форки Nicholas Sharp (nab138) компонентов Gregory Szorc / [apple-platform-rs](https://github.com/indygreg/apple-platform-rs): [isideload-apple-platform-rs](https://github.com/nab138/isideload-apple-platform-rs) и [isideload-cryptography-rs](https://github.com/nab138/isideload-cryptography-rs). Эти библиотеки используются в [SideInstaller](https://github.com/FrizzleM/SideInstaller). Версии зафиксированы в `CarrierSIM-iOS/rust-core/Cargo.lock`; исходные уведомления MPL-2.0 включены в `Licenses/THIRD-PARTY-RUST.txt` и оба IPA. Полный Apple Account/anisette-механизм SideInstaller в CarrierSIM не перенесён.
+
 ## Заголовки, зависимости, ресурсы и инструменты
 
 - [libplist](https://github.com/libimobiledevice/libplist): используемые заголовки и их оригинальные copyright-уведомления Nikias Bassen и Jonathan Beck; условия LGPL-2.1-or-later для соответствующих заголовков сохранены отдельно.

@@ -3,7 +3,7 @@
     "app": {
       "architecture": "arm64",
       "platform": "iOS device",
-      "bytes": 8227232,
+      "bytes": 15649232,
       "dependencies": [
         "/System/Library/Frameworks/Foundation.framework/Foundation",
         "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
@@ -49,8 +49,8 @@
       }
     },
     "filename": "CarrierSIM-iOS-unsigned.ipa",
-    "sha256": "86691e320d158fec760f4f7e72995009f2a5072e4e400feedbe3cb4c819444ab",
-    "ipa_bytes": 3695703,
+    "sha256": "528d259a43af94af9c9d21e65d69e214f21bc811ecde4abbd94684cabbabb785",
+    "ipa_bytes": 6407233,
     "external_vpn": false,
     "physical_device_tested": false
   },
@@ -58,7 +58,7 @@
     "app": {
       "architecture": "arm64",
       "platform": "iOS device",
-      "bytes": 8227024,
+      "bytes": 15649024,
       "dependencies": [
         "/System/Library/Frameworks/Foundation.framework/Foundation",
         "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
@@ -82,8 +82,8 @@
       "entitlements": {}
     },
     "filename": "CarrierSIM-iOS-external-vpn.ipa",
-    "sha256": "94462f0e8c644a476e53b16b58e6523ae1db585df48fcf3b4e390cb6cf46fc92",
-    "ipa_bytes": 3688254,
+    "sha256": "bb9dbc8525cb466707c8c493610d1625f9a689ea47a95a8aa9f50f654b8102a5",
+    "ipa_bytes": 6399767,
     "external_vpn": true,
     "physical_device_tested": false
   }

@@ -7,14 +7,25 @@ use serde::Deserialize;
 use serde_json::json;
 use tokio::io::{AsyncReadExt,AsyncWriteExt};
 use zip::ZipArchive;
+use sha2::{Digest,Sha256};
 use crate::{device_target::{DeviceTarget,verify_identity}, exploit::{self,ALLogCallback,Logger}, ffi_util};
 
 const MAX_IPA: u64 = 512 * 1024 * 1024;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct InstallRequest { target: DeviceTarget, expected_device_hash: String }
+struct InstallRequest { target: DeviceTarget, expected_device_hash: String, #[serde(default)] carriersim_only:bool }
 #[derive(Debug)]
 struct Package { bundle_id: String, display_name: String, minimum_ios: String }
+
+fn file_digest(path:&Path)->Result<[u8;32],String> {
+    let mut file=File::open(path).map_err(|_|"Выбранный IPA недоступен.".to_string())?;
+    let mut hasher=Sha256::new();let mut buffer=[0u8;65536];let mut bytes=0u64;
+    loop {
+        let n=file.read(&mut buffer).map_err(|e|e.to_string())?;if n==0 {break;}
+        bytes+=n as u64;if bytes>MAX_IPA {return Err("Выбранный IPA слишком большой.".into());}
+        hasher.update(&buffer[..n]);
+    } Ok(hasher.finalize().into())
+}
 
 fn version(text: &str) -> Result<Vec<u32>,String> {
     if text.is_empty() || text.len()>32 { return Err("Неверная версия iOS в IPA.".into()); }
@@ -69,16 +80,21 @@ fn inspect<R: Read+Seek>(reader:R) -> Result<Package,String> {
     Ok(Package{display_name:if display_name.is_empty(){bundle_id.clone()}else{display_name},bundle_id,minimum_ios})
 }
 
-async fn install(pairing:&Path, ipa:&Path, request:InstallRequest, logger:&Logger)->Result<serde_json::Value,String> {
+async fn install(pairing:&Path, ipa:&Path, work:&Path, request:InstallRequest, logger:&Logger)->Result<serde_json::Value,String> {
     request.target.address()?;
+    let _lock=crate::carrier::OpLock::acquire(work)?;
+    if crate::carrier::needs_recovery(work,&request.expected_device_hash)? {return Err("Сначала восстанови незавершённую операцию CarrierSIM.".into());}
     let file=File::open(ipa).map_err(|_|"Не удалось открыть выбранный IPA.".to_string())?;
     let length=file.metadata().map_err(|e|e.to_string())?.len();
     if length==0 || length>MAX_IPA { return Err("Выбери IPA размером от 1 байта до 512 МБ.".into()); }
     let package=inspect(file)?;
+    if request.carriersim_only && package.bundle_id!="com.tema.CarrierSIM" {return Err("Для передачи самого CarrierSIM выбери IPA с идентификатором com.tema.CarrierSIM.".into());}
+    let original_hash=file_digest(ipa)?;
     let bytes=std::fs::read(pairing).map_err(|_|"Нет сопряжения с iPhone друга.".to_string())?;
     if bytes.len()>1024*1024 { return Err("Файл сопряжения слишком большой.".into()); }
-    let mut tunnel=exploit::connect_tunnel_for_target(&bytes,logger,Some(&request.target)).await?;
-    let device=crate::carrier::device_info(&mut tunnel).await?;
+    let mut tunnel=tokio::time::timeout(Duration::from_secs(40),exploit::connect_tunnel_for_target(&bytes,logger,Some(&request.target))).await
+        .map_err(|_|"iPhone друга не подключился за 40 секунд.".to_string())??;
+    let device=crate::carrier::device_identity(&mut tunnel).await?;
     verify_identity(Some(&request.expected_device_hash),&device.udid_hash,true)?;
     if version(&device.ios)? < version(&package.minimum_ios)? { return Err(format!("IPA требует iOS {}, на iPhone друга установлена {}.",package.minimum_ios,device.ios)); }
     let mut afc=tokio::time::timeout(Duration::from_secs(30),tunnel.connect_afc(logger)).await.map_err(|_|"AFC не ответил.".to_string())??;
@@ -93,27 +109,33 @@ async fn install(pairing:&Path, ipa:&Path, request:InstallRequest, logger:&Logge
         logger.log(format!("Передаю {} на проверенный iPhone друга…",package.display_name));
         let mut local=tokio::fs::File::open(ipa).await.map_err(|e|e.to_string())?;
         let mut remote=tokio::time::timeout(Duration::from_secs(30),afc.open(&staging,AfcFopenMode::WrOnly)).await.map_err(|_|"AFC не открыл IPA.".to_string())?.map_err(|e|e.to_string())?;
-        let mut buffer=vec![0u8;256*1024]; let mut sent=0u64; let mut last=0u64;
+        let mut buffer=vec![0u8;256*1024]; let mut sent=0u64; let mut last=0u64;let mut sent_hash=Sha256::new();
         loop {
             let count=local.read(&mut buffer).await.map_err(|e|e.to_string())?; if count==0 {break;}
             tokio::time::timeout(Duration::from_secs(30),remote.write_all(&buffer[..count])).await.map_err(|_|"Передача прервалась. Проверь Wi-Fi и повтори установку.".to_string())?.map_err(|e|e.to_string())?;
             sent+=count as u64;
+            sent_hash.update(&buffer[..count]);
             let percent=sent*100/length;
             if percent>=last+10 {logger.log(format!("Передача IPA: {percent}%"));last=percent;}
         }
         tokio::time::timeout(Duration::from_secs(30),remote.close()).await.map_err(|_|"AFC не подтвердил закрытие файла.".to_string())?.map_err(|e|e.to_string())?;
-        if sent!=length {return Err("Выбранный IPA изменился во время передачи.".into());}
+        if sent!=length || <[u8;32]>::from(sent_hash.finalize())!=original_hash {return Err("Выбранный IPA изменился во время передачи. Установка не запрошена.".into());}
         let uploaded=tokio::time::timeout(Duration::from_secs(30),afc.get_file_info(&staging)).await.map_err(|_|"Не удалось проверить передачу.".to_string())?.map_err(|e|e.to_string())?;
         if uploaded.size as u64!=length {return Err("Размер переданного IPA не совпадает.".into());}
         // Re-read identity immediately before requesting an installation.
-        let current=crate::carrier::device_info(&mut tunnel).await?;
+        let current=crate::carrier::device_identity(&mut tunnel).await?;
         verify_identity(Some(&request.expected_device_hash),&current.udid_hash,true)?;
         let mut proxy=tokio::time::timeout(Duration::from_secs(30),tunnel.connect_installation_proxy(logger)).await.map_err(|_|"Служба установки недоступна.".to_string())??;
         logger.log("iOS проверяет подпись и устанавливает приложение…");
         tokio::time::timeout(Duration::from_secs(300),proxy.install(&staging,None)).await
             .map_err(|_|"Нет подтверждения установки. Она могла продолжиться на iPhone друга — проверь экран и журнал перед повтором.".to_string())?
             .map_err(|e|format!("iOS отказала в установке: {e}. Проверь срок сертификата и регистрацию iPhone друга в профиле подписи."))?;
-        let apps=tokio::time::timeout(Duration::from_secs(30),proxy.get_apps(Some("Any"),Some(vec![package.bundle_id.clone()]))).await
+        drop(proxy);
+        let current=crate::carrier::device_identity(&mut tunnel).await?;
+        verify_identity(Some(&request.expected_device_hash),&current.udid_hash,true)?;
+        let mut lookup=tokio::time::timeout(Duration::from_secs(30),tunnel.connect_installation_proxy(logger)).await
+            .map_err(|_|"Установка завершилась, но служба проверки списка приложений недоступна.".to_string())??;
+        let apps=tokio::time::timeout(Duration::from_secs(30),lookup.get_apps(Some("Any"),Some(vec![package.bundle_id.clone()]))).await
             .map_err(|_|"iOS завершила установку, но не ответила на проверку списка приложений.".to_string())?.map_err(|e|e.to_string())?;
         if !apps.contains_key(&package.bundle_id) {return Err("iOS завершила установку, но приложение не найдено в списке. Проверь iPhone друга.".into());}
         Ok(json!({"installed":true,"bundle_id":package.bundle_id,"display_name":package.display_name,"device":device.public(),"message":"iOS подтвердила установку; приложение найдено на iPhone друга. Открой его на телефоне друга."}))
@@ -127,16 +149,16 @@ async fn install(pairing:&Path, ipa:&Path, request:InstallRequest, logger:&Logge
 /// Blocking C entry point. Output strings are owned by the caller and use
 /// al_string_free. No Apple credentials, signing or signature bypass.
 #[no_mangle]
-pub unsafe extern "C" fn cs_install_ipa(pairing_path:*const c_char,ipa_path:*const c_char,request_json:*const c_char,
+pub unsafe extern "C" fn cs_install_ipa(pairing_path:*const c_char,ipa_path:*const c_char,work_dir:*const c_char,request_json:*const c_char,
     cb:ALLogCallback,ctx:*mut c_void,result_json:*mut *mut c_char,error:*mut *mut c_char)->i32 {
     if !result_json.is_null(){*result_json=std::ptr::null_mut();}
     if !error.is_null(){*error=std::ptr::null_mut();}
     let result=std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        let pairing=ffi_util::opt_str(pairing_path,""); let ipa=ffi_util::opt_str(ipa_path,""); let text=ffi_util::opt_str(request_json,"");
-        if pairing.is_empty() || ipa.is_empty() || text.len()>8192 {return Err("Неверный запрос установки.".to_string());}
+        let pairing=ffi_util::opt_str(pairing_path,""); let ipa=ffi_util::opt_str(ipa_path,""); let text=ffi_util::opt_str(request_json,"");let work=ffi_util::opt_str(work_dir,"");
+        if pairing.is_empty() || ipa.is_empty() || work.is_empty() || text.len()>8192 {return Err("Неверный запрос установки.".to_string());}
         let request:InstallRequest=serde_json::from_str(&text).map_err(|e|e.to_string())?;
         let logger=Logger{cb,ctx};
-        idevice_ffi::run_sync_local(install(Path::new(&pairing),Path::new(&ipa),request,&logger))
+        idevice_ffi::run_sync_local(install(Path::new(&pairing),Path::new(&ipa),Path::new(&work),request,&logger))
     })).unwrap_or_else(|_|Err("Установка прервалась. Проверь iPhone друга перед повтором.".into()));
     match result {
         Ok(value)=>{if !result_json.is_null(){*result_json=ffi_util::cstr(value.to_string());}0},
@@ -168,5 +190,20 @@ mod tests {
     }
     #[test] fn minimum_ios_uses_numeric_comparison() {
         assert!(version("27.0.1").unwrap()>version("26.9").unwrap());assert_eq!(version("26").unwrap(),version("26.0.0").unwrap());assert!(version("not-ios").is_err());
+    }
+    #[tokio::test] async fn ios_error_without_description_cannot_report_install_success() {
+        use idevice::{Idevice,installation_proxy::InstallationProxyClient};
+        let (client,mut server)=tokio::io::duplex(8192);
+        let server=tokio::spawn(async move {
+            let length=server.read_u32().await.unwrap();let mut request=vec![0;length as usize];server.read_exact(&mut request).await.unwrap();
+            let request=Value::from_reader(std::io::Cursor::new(request)).unwrap();
+            assert_eq!(request.as_dictionary().unwrap().get("Command").and_then(Value::as_string),Some("Install"));
+            let mut response=plist::Dictionary::new();response.insert("Error".into(),Value::String("TestSignatureFailure".into()));response.insert("Status".into(),Value::String("Complete".into()));
+            let mut bytes=Vec::new();Value::Dictionary(response).to_writer_xml(&mut bytes).unwrap();
+            server.write_u32(bytes.len() as u32).await.unwrap();server.write_all(&bytes).await.unwrap();
+        });
+        let mut client=InstallationProxyClient::new(Idevice::new(Box::new(client),"test"));
+        assert!(client.install("PublicStaging/test.ipa",None).await.unwrap_err().to_string().contains("TestSignatureFailure"));
+        server.await.unwrap();
     }
 }

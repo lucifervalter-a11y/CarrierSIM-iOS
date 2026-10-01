@@ -1,3 +1,5 @@
+   Compiling idevice v0.1.63 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core/vendor/idevice)
+   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
 warning: function `parse_u64_value` is never used
   --> vendor/idevice/src/services/dvt/process_control.rs:55:4
    |
@@ -163,8 +165,6 @@ warning: methods `read_message_timeout`, `call_method_with_reply`, `set_incoming
 1478 |     pub(crate) async fn send_raw_reply_for(
      |                         ^^^^^^^^^^^^^^^^^^
 
-warning: `idevice` (lib) generated 11 warnings
-   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
 warning: unused variable: `pin_callback`
    --> vendor/idevice-ffi/src/tunnel_provider.rs:832:5
     |
@@ -191,21 +191,22 @@ warning: unused variable: `ctx`
 1002 |     let ctx = PinCtx(pin_context);
      |         ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
 
+warning: `idevice` (lib) generated 11 warnings
 warning: `idevice-ffi` (lib) generated 4 warnings (run `cargo fix --lib -p idevice-ffi` to apply 4 suggestions)
-   Compiling airlift_ffi v0.1.0 (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/rust-core)
+   Compiling airlift_ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core)
 warning: value assigned to `last_error` is never read
-   --> src/exploit.rs:199:21
+   --> src/exploit.rs:210:21
     |
-199 |                     last_error = err_msg;
+210 |                     last_error = err_msg;
     |                     ^^^^^^^^^^
     |
     = help: maybe it is overwritten before being read?
     = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
 
 warning: value assigned to `last_error` is never read
-   --> src/exploit.rs:204:21
+   --> src/exploit.rs:215:21
     |
-204 |                     last_error = err_msg;
+215 |                     last_error = err_msg;
     |                     ^^^^^^^^^^
     |
     = help: maybe it is overwritten before being read?
@@ -282,12 +283,12 @@ warning: fields `bundle`, `version`, `supported_sims`, and `hardware_supported` 
     = note: `Trigger` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
 
 warning: `airlift_ffi` (lib) generated 11 warnings
-    Finished `release` profile [optimized] target(s) in 1m 22s
-Verified unchanged build inputs: 228 files
-Verified CarrierSIM: native Mach-O arm64, 8,227,232 bytes
+    Finished `release` profile [optimized] target(s) in 3m 05s
+Verified unchanged build inputs: 234 files
+Verified CarrierSIM: native Mach-O arm64, 15,649,232 bytes
 Verified CarrierSIMTunnel: native Mach-O arm64, 73,136 bytes
-IPA: /workspace/CarrierSIM-review/source/CarrierSIM-iOS/build/CarrierSIM-iOS-unsigned.ipa
-SHA256: 86691e320d158fec760f4f7e72995009f2a5072e4e400feedbe3cb4c819444ab
-IPA: /workspace/CarrierSIM-review/source/CarrierSIM-iOS/build/CarrierSIM-iOS-external-vpn.ipa
-SHA256: 94462f0e8c644a476e53b16b58e6523ae1db585df48fcf3b4e390cb6cf46fc92
+IPA: /workspace/CarrierSIM-v1.2/CarrierSIM-iOS/build/CarrierSIM-iOS-unsigned.ipa
+SHA256: 528d259a43af94af9c9d21e65d69e214f21bc811ecde4abbd94684cabbabb785
+IPA: /workspace/CarrierSIM-v1.2/CarrierSIM-iOS/build/CarrierSIM-iOS-external-vpn.ipa
+SHA256: bb9dbc8525cb466707c8c493610d1625f9a689ea47a95a8aa9f50f654b8102a5
 Re-sign both the app and its VPN extension using an Apple identity/profile before installation.

@@ -2,6 +2,8 @@
 #import "CSConnectionManager.h"
 #import "airlift.h"
 #import "CSLANBrowserViewController.h"
+#import "CSDeveloperModeViewController.h"
+#import "CSShareViewController.h"
 #import <arpa/inet.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
@@ -29,6 +31,8 @@ static NSString *CSRedact(NSString *input) {
 @interface CSMainViewController () <UIDocumentPickerDelegate>
 @property (nonatomic, strong) CSConnectionManager *connection;
 @property (nonatomic, copy) NSDictionary *remoteTarget;
+@property (nonatomic, copy) NSDictionary *installationDevice;
+@property (nonatomic) BOOL developerWaiting;
 @property (nonatomic) BOOL selectingIPA;
 @property (nonatomic, strong) NSURL *workDirectory;
 @property (nonatomic, strong) NSMutableArray<NSString *> *logLines;
@@ -78,7 +82,7 @@ static void CSLogCallback(void *context, const char *message) {
     [self configureConnection];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(becameActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [self buildHeader];
-    [self appendLog:@"CarrierSIM 1.1 • iOS-приложение. Диагностика не содержит ключей сопряжения."];
+    [self appendLog:@"CarrierSIM 1.2 • Подпись P12, подготовка режима разработчика и прямое применение профиля другу."];
 }
 
 
@@ -97,6 +101,7 @@ static void CSLogCallback(void *context, const char *message) {
         weakSelf.pairingPIN = nil;
         weakSelf.connectionChecked = NO;
         weakSelf.snapshot = nil;
+        weakSelf.installationDevice = nil;
         weakSelf.lastMessage = error ? CSRedact(error.localizedDescription) : (weakSelf.remoteTarget ? @"Сопряжение сохранено. Проверь адрес и порт iPhone друга, затем нажми «Проверить iPhone»." : @"Сопряжение сохранено. Теперь включи локальное подключение и нажми «Проверить iPhone».");
         [weakSelf.tableView reloadData];
     };
@@ -106,10 +111,13 @@ static void CSLogCallback(void *context, const char *message) {
     [NSFileManager.defaultManager createDirectoryAtURL:self.workDirectory withIntermediateDirectories:YES attributes:@{NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication, NSFilePosixPermissions:@0700} error:nil];
     [self.workDirectory setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:nil];
     self.connectionChecked = NO; self.snapshot = nil; self.operationResult = nil; self.needsRecovery = NO; self.pairingPIN = nil;
+    self.installationDevice = nil;
+    self.developerWaiting = [CSDeveloperModeViewController hasPendingAtDirectory:self.workDirectory];
 }
 
 - (NSString *)targetName {
-    NSString *name = CSText(self.snapshot[@"device"][@"name"]);
+    NSString *name = CSText(self.installationDevice[@"name"]);
+    if (!name.length) name = CSText(self.snapshot[@"device"][@"name"]);
     return name.length ? name : (self.remoteTarget ? @"iPhone друга" : @"этот iPhone");
 }
 
@@ -126,7 +134,7 @@ static void CSLogCallback(void *context, const char *message) {
 
 - (void)enterRemoteAddress:(NSString *)host port:(NSInteger)port {
     NSDictionary *saved = self.remoteTarget ?: [NSUserDefaults.standardUserDefaults dictionaryForKey:@"CarrierSIM.remoteTarget"];
-    UIAlertController *entry = [UIAlertController alertControllerWithTitle:@"Другой iPhone" message:@"Адрес друга: Настройки → Wi-Fi → ⓘ → IP-адрес. Порт службы можно выбрать через поиск в Wi-Fi; 49152 — только начальное значение. На iPhone друга нужен режим разработчика и сопряжение. Локальный VPN твоего телефона не открывает службы друга." preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *entry = [UIAlertController alertControllerWithTitle:@"Другой iPhone" message:@"Адрес друга: Настройки → Wi-Fi → ⓘ → IP-адрес. Порт службы можно выбрать через поиск в Wi-Fi; 49152 — начальное значение для Remote Pairing. С готовым Lockdown-сопряжением используется порт 62078. После выбора открой «Режим разработчика» и проверь телефон. Для первоначального доверия может потребоваться компьютер." preferredStyle:UIAlertControllerStyleAlert];
     [entry addTextFieldWithConfigurationHandler:^(UITextField *f) { f.placeholder = @"192.168.1.25"; f.text = host ?: CSText(saved[@"host"]); f.keyboardType = UIKeyboardTypeDecimalPad; }];
     [entry addTextFieldWithConfigurationHandler:^(UITextField *f) { f.placeholder = @"Порт RSD / Remote Pairing"; f.text = port > 0 ? [@(port) stringValue] : [saved[@"rsd_port"] description] ?: @"49152"; f.keyboardType = UIKeyboardTypeNumberPad; }];
     [entry addAction:[UIAlertAction actionWithTitle:@"Отмена" style:UIAlertActionStyleCancel handler:nil]];
@@ -197,17 +205,17 @@ static void CSLogCallback(void *context, const char *message) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView { return 5; }
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return section == 0 ? 6 : section == 1 ? 3 : section == 2 ? 3 : 2;
+    return section == 0 ? 8 : section == 1 ? 3 : section == 2 ? 3 : 2;
 }
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     return @[@"1. Подключение", @"2. SIM и профиль", @"3. Действие", @"Результат", @"Помощь"][section];
 }
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-    if (section == 0 && self.remoteTarget) return @"Подтверди сопряжение на телефоне друга. Если его службы недоступны по Wi-Fi, установи CarrierSIM на его телефон через DDE Store и работай там. Для установки по сети выбери IPA, подписанный для его iPhone.";
+    if (section == 0 && self.remoteTarget) return self.developerWaiting ? @"Ожидается подтверждение режима разработчика. Открой этот раздел и проверь состояние либо останови ожидание." : @"Можно применить профиль напрямую без CarrierSIM на телефоне друга. Чтобы передать сам CarrierSIM, проверь телефон и выбери «Отправить CarrierSIM другу».";
     if (section == 0) return @"Сопряжение создаётся один раз. Разрешения на локальную сеть, VPN и сопряжение подтверждаются в iOS.";
     if (section == 1) return @"По умолчанию выбран Vodafone_hu, как в твоём архиве. Это выбор настроек iPhone; тариф и SIM не меняются.";
     if (section == 2) return self.busy ? @"Идёт операция. Оставь CarrierSIM открытым и не отключай локальное VPN-подключение." : @"Перед записью создаётся копия. «Штатные профили» удаляет IMSI-ссылки для всех SIM. «Восстановление» завершает прерванную операцию.";
-    if (section == 4) return @"CarrierSIM 1.1 · На основе твоего CarrierSIM v4, AirLift, AirCard-iOS и idevice. Локальный VPN использует код LocalDevVPN (SideStore Team).";
+    if (section == 4) return @"ОРИГИНАЛ ВЗЯТ ИЗ IOS-BUNDLES/CARRIERSIM: https://github.com/ios-bundles/CarrierSIM\nCarrierSIM 1.2 · AirLift, AirCard-iOS, idevice, LocalDevVPN и isideload-apple-codesign.";
     return nil;
 }
 
@@ -236,7 +244,9 @@ static void CSLogCallback(void *context, const char *message) {
     NSInteger row = indexPath.row;
     if (indexPath.section == 0) {
         if (row == 4) return [self cellWithTitle:@"Выбранный iPhone" detail:self.remoteTarget ? [NSString stringWithFormat:@"Другой iPhone · %@:%@", self.remoteTarget[@"host"], self.remoteTarget[@"rsd_port"]] : @"Этот iPhone" symbol:@"iphone.gen3.radiowaves.left.and.right" enabled:idle && !self.connection.isVPNStarting];
-        if (row == 5) return [self cellWithTitle:@"Установить подписанный IPA другу" detail:@"Выбрать файл, подписанный для проверенного iPhone" symbol:@"square.and.arrow.up" enabled:idle && self.remoteTarget && self.connectionChecked];
+        if (row == 5) return [self cellWithTitle:@"Отправить CarrierSIM другу" detail:@"Подписать P12 и установить этот же CarrierSIM" symbol:@"square.and.arrow.up" enabled:idle && self.remoteTarget && self.installationDevice && !self.needsRecovery && !self.developerWaiting];
+        if (row == 6) return [self cellWithTitle:@"Режим разработчика" detail:self.developerWaiting ? @"Ожидание после перезагрузки · проверить состояние" : @"Проверить телефон, показать пункт, запросить включение" symbol:@"hammer" enabled:idle && (self.connection.hasPairing || self.developerWaiting)];
+        if (row == 7) return [self cellWithTitle:@"Установить готовый подписанный IPA" detail:@"Выбрать файл для проверенного iPhone друга" symbol:@"square.and.arrow.down" enabled:idle && self.remoteTarget && self.installationDevice && !self.needsRecovery && !self.developerWaiting];
         if (row == 0) {
             NSString *detail = self.connection.hasPairing ? (self.remoteTarget ? @"Сохранено отдельно для iPhone друга" : @"Сохранено на этом iPhone") : @"Создать внутри CarrierSIM, без компьютера";
             if (self.connection.isPairing) detail = self.pairingPIN.length ? [NSString stringWithFormat:@"Код для настроек: %@. Нажми, чтобы скопировать или остановить.", self.pairingPIN] : @"Открой настройки iOS → Режим разработчика → Сопряжение с CarrierSIM";
@@ -244,7 +254,7 @@ static void CSLogCallback(void *context, const char *message) {
         }
         if (row == 1 && self.remoteTarget) return [self cellWithTitle:@"Соединение по Wi-Fi" detail:[NSString stringWithFormat:@"%@:%@ · открыть настройки адреса", self.remoteTarget[@"host"], self.remoteTarget[@"rsd_port"]] symbol:@"wifi" enabled:idle];
         if (row == 1) return [self cellWithTitle:@"Локальное подключение" detail:self.connection.isVPNConnected ? @"Встроенный VPN включён" : (self.connection.isVPNStarting ? @"Подключается…" : (self.connection.hasEmbeddedVPN ? @"Включить встроенный локальный VPN" : @"Открыть LocalDevVPN для подключения")) symbol:@"network" enabled:idle && !self.connection.isVPNStarting];
-        if (row == 2) return [self cellWithTitle:self.busy ? @"Подожди завершения операции" : @"Проверить iPhone" detail:@"Проверяет доступ и читает SIM, без смены профиля" symbol:@"checkmark.shield" enabled:idle && self.connection.hasPairing];
+        if (row == 2) return [self cellWithTitle:self.busy ? @"Подожди завершения операции" : @"Проверить iPhone и SIM" detail:@"Подготовить прямое применение профиля без установки другу" symbol:@"checkmark.shield" enabled:idle && self.connection.hasPairing];
         return [self cellWithTitle:@"Уже есть файл Stik Pair" detail:@"Импортировать .plist / .rppairing через «Файлы»" symbol:@"square.and.arrow.down" enabled:idle];
     }
     if (indexPath.section == 1) {
@@ -266,7 +276,7 @@ static void CSLogCallback(void *context, const char *message) {
         return [self cellWithTitle:@"Обнаруженные SIM" detail:detail symbol:@"iphone" enabled:NO];
     }
     if (indexPath.section == 2) {
-        BOOL ready = idle && self.connectionChecked && !self.needsRecovery;
+        BOOL ready = idle && self.connectionChecked && !self.needsRecovery && !self.developerWaiting;
         if (row == 0) {
             UITableViewCell *cell = [self cellWithTitle:@"Применить профиль" detail:@"Копия → запись → обратное чтение → проверка выбора iOS" symbol:@"bolt.shield.fill" enabled:ready && [self.snapshot[@"can_apply"] boolValue]];
             if (ready) cell.textLabel.textColor = self.view.tintColor;
@@ -302,7 +312,9 @@ static void CSLogCallback(void *context, const char *message) {
     if (section == 0) {
         if (row == 1) { if (self.remoteTarget) [self enterRemoteAddress:nil port:0]; else [self VPNMenu]; }
         if (row == 4 && !self.connection.isVPNStarting) [self targetMenu];
-        if (row == 5 && self.remoteTarget && self.connectionChecked) [self selectIPA];
+        if (row == 5 && self.remoteTarget && self.installationDevice && !self.needsRecovery && !self.developerWaiting) [self shareCarrierSIM];
+        if (row == 6 && (self.connection.hasPairing || self.developerWaiting)) [self developerModeMenu];
+        if (row == 7 && self.remoteTarget && self.installationDevice && !self.needsRecovery && !self.developerWaiting) [self selectIPA];
         if (row == 2 && self.connection.hasPairing) [self runAction:@"status"];
         if (row == 3) [self importPairing];
     } else if (section == 1) {
@@ -310,7 +322,7 @@ static void CSLogCallback(void *context, const char *message) {
         if (row == 1) [self chooseBundle];
     } else if (section == 2) {
         if (row == 2 && self.connection.hasPairing) { [self confirmAction:@"recover"]; return; }
-        if (!self.connectionChecked || self.needsRecovery) return;
+        if (!self.connectionChecked || self.needsRecovery || self.developerWaiting) return;
         if (row == 0 && [self.snapshot[@"can_apply"] boolValue]) [self confirmAction:@"apply"];
         if (row == 1) [self confirmAction:@"restore"];
     }
@@ -389,15 +401,42 @@ static void CSLogCallback(void *context, const char *message) {
 }
 
 - (void)selectIPA {
-    if (!self.remoteTarget || !self.connectionChecked) return;
+    if (!self.remoteTarget || !self.installationDevice || self.developerWaiting || self.needsRecovery) return;
     self.selectingIPA = YES;
     UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[UTTypeData] asCopy:YES];
     picker.delegate = self; picker.allowsMultipleSelection = NO;
     [self presentViewController:picker animated:YES completion:nil];
 }
 
+- (void)developerModeMenu {
+    if (self.busy || self.connection.isPairing || self.connection.isImporting) return;
+    CSDeveloperModeViewController *controller=[[CSDeveloperModeViewController alloc] initWithPairingPath:self.connection.pairingPath workDirectory:self.workDirectory target:self.remoteTarget operationQueue:self.operationQueue];
+    __weak typeof(self) weakSelf=self;
+    controller.onLog=^(NSString *message){[weakSelf appendLog:message];};
+    controller.onState=^(NSDictionary *result,BOOL busy,BOOL waiting){
+        weakSelf.busy=busy;weakSelf.developerWaiting=waiting;weakSelf.connectionChecked=NO;
+        UIApplication.sharedApplication.idleTimerDisabled=busy;
+        weakSelf.installationDevice=[result[@"device"] isKindOfClass:NSDictionary.class] ? result[@"device"] : nil;
+        if (result) weakSelf.needsRecovery=[result[@"needs_recovery"] boolValue];
+        if (waiting) weakSelf.lastMessage=@"Подтверди включение на телефоне друга. Режим разработчика проверяется после перезагрузки.";
+        else if (result) weakSelf.lastMessage=CSText(result[@"message"]);
+        [weakSelf.tableView reloadData];
+    };
+    [self.navigationController pushViewController:controller animated:YES];
+}
+
+- (void)shareCarrierSIM {
+    if (self.busy || !self.remoteTarget || !self.installationDevice || self.needsRecovery || self.developerWaiting) return;
+    CSShareViewController *controller=[[CSShareViewController alloc] initWithPairingPath:self.connection.pairingPath workDirectory:self.workDirectory target:self.remoteTarget device:self.installationDevice operationQueue:self.operationQueue];
+    __weak typeof(self) weakSelf=self;
+    controller.onBusy=^(BOOL busy){weakSelf.busy=busy;UIApplication.sharedApplication.idleTimerDisabled=busy;[weakSelf.tableView reloadData];};
+    controller.onLog=^(NSString *message){weakSelf.lastMessage=message;[weakSelf appendLog:message];};
+    controller.onFinished=^(NSDictionary *result){weakSelf.installationDevice=nil;weakSelf.connectionChecked=NO;[weakSelf.tableView reloadData];};
+    [self.navigationController pushViewController:controller animated:YES];
+}
+
 - (void)confirmInstallURL:(NSURL *)url {
-    if (self.busy || self.connection.isPairing || self.connection.isImporting || !self.remoteTarget || !self.connectionChecked) {
+    if (self.busy || self.connection.isPairing || self.connection.isImporting || !self.remoteTarget || !self.installationDevice || self.developerWaiting || self.needsRecovery) {
         [self message:@"Сначала проверь iPhone друга" text:@"Выбери «Другой iPhone», создай или импортируй его сопряжение и нажми «Проверить iPhone». После проверки можно установить подписанный IPA."]; return;
     }
     if (!url.isFileURL || ![url.pathExtension.lowercaseString isEqualToString:@"ipa"]) { [self message:@"Выбери IPA" text:@"Нужен файл приложения с расширением .ipa."]; return; }
@@ -409,11 +448,12 @@ static void CSLogCallback(void *context, const char *message) {
 }
 
 - (void)installIPAAtURL:(NSURL *)url {
-    NSString *hash = CSText(self.snapshot[@"device"][@"identity_hash"]);
-    if (!self.remoteTarget || !self.connectionChecked || hash.length != 64 || self.busy) return;
+    NSString *hash = CSText(self.installationDevice[@"identity_hash"]);
+    if (!self.remoteTarget || !self.installationDevice || hash.length != 64 || self.busy || self.developerWaiting || self.needsRecovery) return;
     NSData *json = [NSJSONSerialization dataWithJSONObject:@{@"target":self.remoteTarget,@"expected_device_hash":hash} options:0 error:nil];
     NSString *request = [[NSString alloc] initWithData:json encoding:NSUTF8StringEncoding];
     NSString *pairPath = self.connection.pairingPath;
+    NSString *workPath = self.workDirectory.path;
     NSURL *copyURL = [self.workDirectory URLByAppendingPathComponent:@"selected-install.ipa"];
     self.busy = YES; self.lastMessage = @"Готовлю IPA для установки другу…";
     UIApplication.sharedApplication.idleTimerDisabled = YES; [self.tableView reloadData];
@@ -435,7 +475,7 @@ static void CSLogCallback(void *context, const char *message) {
             if (copied) {
                 BOOL protected = [NSFileManager.defaultManager setAttributes:@{NSFileProtectionKey:NSFileProtectionCompleteUntilFirstUserAuthentication, NSFilePosixPermissions:@0600} ofItemAtPath:copyURL.path error:&copyError] && [copyURL setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:&copyError];
                 if (protected) {
-                    code = cs_install_ipa(pairPath.UTF8String,copyURL.path.UTF8String,request.UTF8String,CSLogCallback,(__bridge void *)self,&output,&errorText);
+                    code = cs_install_ipa(pairPath.UTF8String,copyURL.path.UTF8String,workPath.UTF8String,request.UTF8String,CSLogCallback,(__bridge void *)self,&output,&errorText);
                     if (output) result = [NSJSONSerialization JSONObjectWithData:[[NSString stringWithUTF8String:output] dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
                     if (errorText) error = CSRedact([NSString stringWithUTF8String:errorText]);
                 } else error = @"Не удалось защитить временную копию IPA.";
@@ -446,9 +486,10 @@ static void CSLogCallback(void *context, const char *message) {
                 self.busy = NO; UIApplication.sharedApplication.idleTimerDisabled = NO;
                 if (self.backgroundTask != UIBackgroundTaskInvalid) { [UIApplication.sharedApplication endBackgroundTask:self.backgroundTask]; self.backgroundTask = UIBackgroundTaskInvalid; }
                 self.connectionChecked = NO;
+                self.installationDevice = nil;
                 self.lastMessage = code == 0 && [result[@"installed"] boolValue] ? CSText(result[@"message"]) : (error ?: @"Установка не подтверждена. Проверь телефон друга и журнал.");
                 [self appendLog:self.lastMessage]; [self.tableView reloadData];
-                [self message:code == 0 ? @"Приложение установлено" : @"Установка не подтверждена" text:self.lastMessage];
+                [self message:code == 0 && [result[@"installed"] boolValue] ? @"Приложение установлено" : @"Установка не подтверждена" text:self.lastMessage];
             });
         }
     });
@@ -461,7 +502,7 @@ static void CSLogCallback(void *context, const char *message) {
 - (void)importURL:(NSURL *)url {
     if (self.busy || self.connection.isPairing || self.connection.isImporting) { [self message:@"Подожди завершения" text:@"Файл можно импортировать после текущей операции."]; return; }
     [self.connection importPairingAtURL:url completion:^(NSError *error) {
-        self.connectionChecked = NO; self.snapshot = nil;
+        self.connectionChecked = NO; self.snapshot = nil; self.installationDevice = nil;
         self.lastMessage = error ? error.localizedDescription : @"Сопряжение импортировано. Включи локальное подключение и проверь iPhone.";
         [self.tableView reloadData];
         if (error) [self message:@"Файл не подходит" text:error.localizedDescription];
@@ -535,6 +576,7 @@ static void CSLogCallback(void *context, const char *message) {
 
 - (void)runAction:(NSString *)action {
     if (self.busy || self.connection.isPairing || self.connection.isImporting || !self.connection.hasPairing) return;
+    if (self.developerWaiting && ![action isEqualToString:@"status"]) { [self message:@"Дождись режима разработчика" text:@"Проверь состояние в разделе режима разработчика или останови ожидание."]; return; }
     NSString *assets = [NSBundle.mainBundle pathForResource:@"assets" ofType:@"zip"];
     if (!assets) { [self message:@"Повреждён пакет приложения" text:@"Не найден встроенный assets.zip. Переустанови полный IPA."]; return; }
     self.busy = YES; UIApplication.sharedApplication.idleTimerDisabled = YES;
@@ -581,6 +623,7 @@ static void CSLogCallback(void *context, const char *message) {
     self.needsRecovery = [result[@"needs_recovery"] boolValue];
     BOOL isStatus = [action isEqualToString:@"status"];
     self.connectionChecked = isStatus && code == 0;
+    self.installationDevice = isStatus && code == 0 ? result[@"device"] : nil;
     if (isStatus && code == 0) {
         self.snapshot = result;
         self.lastMessage = self.needsRecovery ? @"Найдена незавершённая операция. Нажми «Восстановить после сбоя»." : ([result[@"can_apply"] boolValue] ? @"iPhone доступен. Проверь выбранные SIM и профиль, затем нажми «Применить»." : @"iPhone доступен, но данных для применения недостаточно. Проверь, что SIM включена и телефон разблокирован.");
@@ -646,10 +689,11 @@ static void CSLogCallback(void *context, const char *message) {
     [self.navigationController.topViewController presentViewController:share animated:YES completion:nil];
 }
 - (void)showGuide {
-    [self showText:@"ДРУГОЙ IPHONE\n\nВ разделе «Выбранный iPhone» выбери другой телефон. Подключитесь к одной Wi-Fi-сети. Создай сопряжение: код подтверждает друг в настройках своего iPhone, а код виден у тебя. Либо импортируй pairing-файл друга. Через поиск в Wi-Fi найди адрес и реальный порт его службы, затем нажми «Проверить iPhone». Если службы Apple не доступны по сети, установи CarrierSIM прямо на телефон друга через DDE Store и работай в режиме «Этот iPhone».\n\nУСТАНОВКА IPA ДРУГУ\n\nПосле проверки телефона выбери «Установить подписанный IPA другу». IPA должен быть подписан для iPhone друга, включая расширение VPN, если оно есть. Наличие платного сертификата для твоего телефона не означает, что он разрешён другу. В этой версии CarrierSIM не подписывает файлы через Apple Account. iOS проверяет подпись и возвращает результат установки.\n\niOS 26: установку приложения можно пробовать с готовым pairing-файлом. Создание нового сопряжения в настройках без компьютера рассчитано на iOS 27. Метод смены профиля на iOS 26 и свежих бетах отдельно не подтверждён.\n\nПРОВЕРКА 5G\n\niPhone 12 и новее имеют поддержку 5G. После применения профиля на выбранном телефоне открой Настройки → Сотовая связь → нужная SIM → Параметры данных → Голос и данные → 5G автоматически или 5G вкл.\n\nПрофиль не создаёт покрытие 5G и не включает услугу у оператора. Для Yota и t2 нужна поддержка 5G со стороны оператора, твоей SIM и тарифа именно в месте проверки. Значок 5G или появившийся переключатель ещё не подтверждают фактическое подключение к сети 5G. Если услуги и покрытия нет, программа не сможет их добавить.\n\nПЕРВЫЙ ЗАПУСК\n\n1. Разреши CarrierSIM доступ к локальной сети.\n\n2. Нажми «Сопряжение с iPhone» → «Создать сопряжение». Затем открой настройки iOS → Конфиденциальность и безопасность → Режим разработчика → Сопряжение с CarrierSIM. Если режим разработчика выключен, сначала включи его и выполни предложенную iOS перезагрузку. Код появится в уведомлении и в CarrierSIM. Подтверди его и вернись в приложение. Если время вышло, создай сопряжение заново.\n\nВместо этого можно импортировать готовый файл из Stik Pair или файл сопряжения с компьютера.\n\n3. Нажми «Локальное подключение» → «Включить встроенный VPN» и подтверди разрешение iOS. Для встроенного VPN нужны поддерживаемые подпись и профиль приложения. Если твой способ подписи не поддерживает VPN-расширение, используй LocalDevVPN.\n\n4. Нажми «Проверить iPhone». Выбери SIM и профиль. По умолчанию стоит Vodafone_hu. После изменения выбора снова проверь iPhone.\n\n5. Нажми «Применить профиль». Дождись результата, не сворачивая приложение.\n\nПРОВЕРКА ВЫЗОВОВ ПО WI-FI\n\nОткрой настройки iOS → Сотовая связь → нужная SIM → Вызовы по Wi-Fi. Включи их, если переключатель появился. Включи авиарежим, затем Wi-Fi, дождись отметки Wi-Fi у оператора и проверь звонок. После проверки выключи авиарежим.\n\nИзменение профиля не гарантирует VoWiFi, EVS или 5G: это зависит от оператора, SIM, модели и версии iOS.\n\nЕСЛИ ЧТО-ТО ПРЕРВАЛОСЬ\n\nВключи локальное подключение и выбери «Восстановить после сбоя». Не удаляй приложение: резервные копии хранятся внутри него.\n\n«Вернуть штатные профили» удаляет все корневые IMSI-ссылки такого типа, сохраняя файлы операторов. Это действие относится ко всем SIM.\n\nСОВМЕСТИМОСТЬ\n\nЭкспериментальная сборка для iOS 27. Исходный CarrierSIM проверялся автором на iOS 27.0. Работа этой сборки на твоём устройстве ещё требует проверки. Обновления iOS могут изменить доступ к службам.\n\nПРИВАТНОСТЬ\n\nНет сервера и аналитики. Сопряжение, ключи и резервные копии остаются внутри приложения. Экспорт журнала не включает файлы сопряжения и копии каталога." title:@"Как пользоваться" share:NO];
+    [self showText:@"ДВА СПОСОБА РАБОТЫ С IPHONE ДРУГА\n\n1. ПРИМЕНИТЬ ПРОФИЛЬ БЕЗ УСТАНОВКИ CARRIERSIM ДРУГУ\n\nПодключите оба телефона к одной Wi-Fi-сети. Выбери «Другой iPhone», создай или импортируй его сопряжение и укажи адрес службы. Нажми «Проверить iPhone и SIM», выбери линию и профиль, снова проверь телефон и примени профиль. Устанавливать CarrierSIM другу для этой операции не нужно. Если службы Apple недоступны, сначала подготовь телефон и доверенное сопряжение через компьютер.\n\n2. ОТПРАВИТЬ САМ CARRIERSIM\n\nПосле сопряжения открой «Режим разработчика»: приложение прочитает имя и модель друга, даже если активной SIM нет. Вернись и выбери «Отправить CarrierSIM другу». Импортируй свой P12 и .mobileprovision, разрешающий телефон друга и com.tema.CarrierSIM. Для встроенного VPN нужен также профиль com.tema.CarrierSIM.Tunnel; оба профиля должны разрешать Network Extension. Введи пароль P12 и нажми «Подписать и установить». Пароль не сохраняется, P12 не передаётся другу. Можно выбрать уже подписанный CarrierSIM из DDE Store. Вход через Apple Account в этой версии не реализован.\n\nБез профиля расширения передаётся вариант для LocalDevVPN. Если сертификат зарегистрирован только для твоего UDID, попроси поставщика добавить iPhone друга и выдать новый профиль. P12 без подходящего профиля не разрешает установку.\n\nРЕЖИМ РАЗРАБОТЧИКА\n\n«Показать пункт в настройках» запрашивает появление переключателя на проверенном телефоне. Владелец открывает Настройки → Конфиденциальность и безопасность → Режим разработчика, включает его и подтверждает перезагрузку. После неё нужно подтвердить включение и ввести код-пароль.\n\n«Запросить включение» может перезагрузить выбранный телефон. Если iOS отказывает из-за код-пароля, включите режим вручную, сохранив код-пароль. CarrierSIM читает состояние после перезагрузки и не повторяет команду включения. Для ручного пути нажми «Ждать после ручного включения». Если IP изменился, вернись, укажи новый адрес и открой раздел заново: проверка должна подтвердить тот же iPhone.\n\nЕсли нет сопряжения или службы недоступны при выключенном режиме, сетевой запрос не поможет: начни доверенное сопряжение через совместимый компьютер. Прямой USB-C между двумя iPhone и работа через мобильный интернет в этой версии отсутствуют.\n\nСОПРЯЖЕНИЕ И ПОДПИСЬ\n\nДля работы на самом iPhone включи встроенный локальный VPN или LocalDevVPN, затем проверь устройство. Создание Remote Pairing в настройках рассчитано на iOS 27; на iOS 26 нужен готовый файл. VPN твоего телефона не открывает службы друга. Wi-Fi-сеть должна разрешать соединение между устройствами.\n\nПРОВЕРКА 5G\n\niPhone 12 и новее поддерживают 5G аппаратно. После изменения профиля проверь Настройки → Сотовая связь → нужная SIM → Параметры данных → Голос и данные. Фактическая сеть 5G зависит от оператора, SIM, тарифа и покрытия. Профиль не создаёт услугу 5G у Yota или t2.\n\nПРИ ПРЕРЫВАНИИ\n\nПроверь, установилось ли приложение на телефоне друга, прежде чем повторять установку. Для незавершённого изменения профиля используй «Восстановить после сбоя». Не удаляй CarrierSIM с управляющего телефона: в нём резервные копии. Во время ожидания перезагрузки запись профиля и установка заблокированы.\n\nСОВМЕСТИМОСТЬ\n\nВерсия 1.2 экспериментальная: сборка и автоматические проверки не подтверждают работу на физическом iPhone. Возможности служб меняются между версиями iOS.\n\nОРИГИНАЛ CARRIERSIM ВЗЯТ ИЗ https://github.com/ios-bundles/CarrierSIM" title:@"Как пользоваться" share:NO];
 }
+
 - (void)showLicenses {
-    NSMutableString *text = [NSMutableString stringWithString:@"CarrierSIM для iOS\nВерсия 1.1\n\nПеренос CarrierSIM v4 из предоставленного архива. Интерфейс, сопряжение и локальное подключение встроены.\n\nИспользуется код:\n• AirCard-iOS — https://github.com/Mak5er/AirCard-iOS\n• AirLift — https://github.com/0xjohnnydev/airlift\n• idevice — https://github.com/jkcoxson/idevice\n• LocalDevVPN (SideStore Team): встроенный локальный туннель основан на коде этого проекта — https://github.com/jkcoxson/LocalDevVPN\n\nСовместим с файлами Stik Pair — https://github.com/StikDebug/StikPair\n\nЭто самостоятельная производная сборка CarrierSIM, не официальный выпуск перечисленных проектов.\n\n"];
+    NSMutableString *text = [NSMutableString stringWithString:@"CarrierSIM для iOS\nВерсия 1.2\n\nОРИГИНАЛ CARRIERSIM ВЗЯТ ИЗ https://github.com/ios-bundles/CarrierSIM\n\nПеренос CarrierSIM v4 из предоставленного архива. Интерфейс, сопряжение и локальное подключение встроены.\n\nИспользуется код:\n• AirCard-iOS — https://github.com/Mak5er/AirCard-iOS\n• AirLift — https://github.com/0xjohnnydev/airlift\n• idevice — https://github.com/jkcoxson/idevice\n• LocalDevVPN (SideStore Team): встроенный локальный туннель основан на коде этого проекта — https://github.com/jkcoxson/LocalDevVPN\n\nПодпись P12: isideload-apple-codesign — https://github.com/nab138/isideload-apple-platform-rs\n\nСовместим с файлами Stik Pair — https://github.com/StikDebug/StikPair\n\nЭто самостоятельная производная сборка CarrierSIM, не официальный выпуск перечисленных проектов.\n\n"];
     NSArray *files = [NSFileManager.defaultManager contentsOfDirectoryAtPath:[NSBundle.mainBundle.bundlePath stringByAppendingPathComponent:@"Licenses"] error:nil];
     for (NSString *file in [files sortedArrayUsingSelector:@selector(compare:)]) {
         NSString *path = [[NSBundle.mainBundle.bundlePath stringByAppendingPathComponent:@"Licenses"] stringByAppendingPathComponent:file];

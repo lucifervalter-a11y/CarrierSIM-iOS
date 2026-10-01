@@ -1,38 +1,41 @@
-# CarrierSIM 1.1 для iPhone
+# CarrierSIM 1.2 для iPhone
 
 **ОРИГИНАЛ CARRIERSIM ВЗЯТ ИЗ [IOS-BUNDLES/CARRIERSIM](https://github.com/ios-bundles/CarrierSIM).**
 
-[Скачать версию 1.1](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/releases/tag/v1.1.0) · [Полная инструкция](CarrierSIM-iOS/README.md) · [Исходники](CarrierSIM-iOS/)
+[Скачать 1.2](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/releases/tag/v1.2.0) · [Инструкция](CarrierSIM-iOS/README.md) · [Исходники](CarrierSIM-iOS/)
 
-Новая экспериментальная сборка: выбор своего или другого iPhone, поиск служб Apple в Wi-Fi, установка подписанного IPA, отдельные сопряжения и резервные копии.
+CarrierSIM на вашем iPhone предлагает два сценария для телефона друга:
 
-## Что скачать
+- **Работать с профилем оператора без установки CarrierSIM другу.** Выберите «Другой iPhone», подключитесь через доверенное сопряжение, проверьте его SIM и примените профиль.
+- **Передать это же приложение другу.** Импортируйте P12 и provisioning profile, разрешающий его устройство, затем подпишите CarrierSIM и запросите установку по Wi-Fi.
 
-- **[CarrierSIM-1.1-LAN.zip](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.1-LAN.zip)** — полный комплект: два IPA, исходники, инструкция и SHA-256.
-- **[CarrierSIM-1.1-unsigned.ipa](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.1-unsigned.ipa)** — приложение со встроенным локальным VPN; для установки нужна подходящая подпись приложения и расширения.
-- **[CarrierSIM-1.1-external-vpn.ipa](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.1-external-vpn.ipa)** — вариант для подписи без VPN-расширения; нужен отдельный LocalDevVPN.
+Добавлен экран режима разработчика: чтение состояния, запрос показа пункта в настройках и запрос включения через доступную службу AMFI. Перезагрузку и системные подтверждения выполняет владелец телефона; приложение проверяет состояние после его возвращения.
 
-Все IPA в этом репозитории требуют подписи Apple для целевого iPhone. Для установки другу его устройство должно быть разрешено профилем подписи. Автоматическая подпись через Apple Account в этой версии отсутствует.
+## Скачать
 
-## Проверено и ограничения
+- [Полный комплект CarrierSIM-1.2-LAN.zip](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.2-LAN.zip) — два IPA, исходники, инструкция и результаты проверок.
+- [CarrierSIM-1.2-unsigned.ipa](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.2-unsigned.ipa) — со встроенным VPN. Для подписи нужны профили приложения и VPN-расширения с соответствующими разрешениями.
+- [CarrierSIM-1.2-external-vpn.ipa](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.2-external-vpn.ipa) — без расширения; для локального подключения нужен отдельный LocalDevVPN.
 
-Сборка ARM64 и структура обеих IPA проверены. Прошли 57 основных Rust-тестов и отдельный тест адресов туннеля. На физических iPhone работа этой версии по LAN, установка и смена профиля пока не проверены.
+Сначала подпишите выбранный IPA для своего телефона через ваш сервис установки. Публичные IPA содержат техническую ad-hoc подпись и требуют подписи Apple для установки. Вход через iCloud/Apple Account и выпуск сертификатов в 1.2 не реализованы. Для встроенной подписи нужны настоящий P12, пароль и подходящий `.mobileprovision`. Пароль вводится в приложении и не сохраняется; сертификаты сюда загружать не нужно.
 
-iPhone 12 и новее поддерживают 5G аппаратно, однако профиль оператора не создаёт покрытие или услугу 5G. Поддержку для SIM, тарифа и места использования нужно уточнять у Yota, t2 или своего оператора.
+## Проверка и пределы
 
-Пакет допускает запуск на iOS 26+. Сопряжение без компьютера рассчитано на iOS 27; на iOS 26 нужен готовый pairing-файл. Работа метода смены профиля на iOS 26 и последних бетах 27 не подтверждена.
+**Экспериментальный выпуск:** прошли 68 основных Rust-тестов и отдельный тест туннеля; обе нативные ARM64 IPA проверены. Проверена подпись реального ARM64-бандла тестовым P12, проверка подписи и обнаружение изменения файла. Физические iPhone в среде сборки недоступны: стабильность Wi-Fi-установки, AMFI и смены профиля на iOS 26/27 пока не подтверждена.
 
-[Если не появляется режим разработчика или нужен USB-C](TROUBLESHOOTING.md)
+Общая Wi-Fi-сеть не гарантирует доступ к службам Apple. Нужны сопряжение именно с целевым iPhone и доступные службы. При первоначальной подготовке может понадобиться компьютер. USB-C между двумя iPhone и доступ через мобильную сеть в этой версии отсутствуют.
 
-[План работы с режимом разработчика через Wi-Fi и USB](docs/DEVELOPER-MODE-PLAN.md) — исследование и этапы реализации; в выпуске 1.1 этой функции ещё нет.
+Пакет требует iOS 26+. Встроенное создание Remote Pairing через настройки рассчитано на iOS 27; на iOS 26 нужен готовый файл. Аппаратная поддержка 5G у iPhone 12+ не означает, что смена профиля включит настоящую сеть 5G у Yota/t2: нужны услуга, SIM, тариф и покрытие оператора.
+
+[Если нет режима разработчика или не подходит сертификат](TROUBLESHOOTING.md) · [Что изменилось в 1.2](docs/RELEASE-1.2.md) · [Проектирование AMFI](docs/DEVELOPER-MODE-PLAN.md)
 
 ## Сборка
 
-Актуальный полный проект находится в `CarrierSIM-iOS/`. GitHub Actions **Build CarrierSIM IPA** собирает этот каталог, проверяет пакеты и запускает тесты. Результаты сборки требуют подписи для установки.
+Полный проект находится в `CarrierSIM-iOS/`. GitHub Actions **Build CarrierSIM IPA** собирает оба пакета и запускает проверки.
 
 ```sh
 cd CarrierSIM-iOS
 bash scripts/setup-linux.sh --build
 ```
 
-[Инструкция сборки](CarrierSIM-iOS/scripts/BUILDING.md) · [Результаты локальных проверок](CarrierSIM-iOS/Tests/VALIDATION.txt)
+[Требования сборки](CarrierSIM-iOS/scripts/BUILDING.md) · [Протокол проверки](CarrierSIM-iOS/Tests/VALIDATION.txt) · [Авторы](CREDITS.md)

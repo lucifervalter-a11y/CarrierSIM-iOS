@@ -58,7 +58,7 @@ TUNNEL_SOURCES=("$PROJECT_ROOT"/Tunnel/*.m)
   -framework AVFoundation -framework UniformTypeIdentifiers -framework SystemConfiguration \
   -lc++ -lz -lsqlite3 -lresolv -liconv \
   -Wl,-u,_ALGetGrappaToken -Wl,-exported_symbol,_ALGetGrappaToken \
-  -Wl,-exported_symbol,_cs_execute -Wl,-exported_symbol,_cs_install_ipa -Wl,-exported_symbol,_al_pairing_cancel_host \
+  -Wl,-exported_symbol,_cs_execute -Wl,-exported_symbol,_cs_install_ipa -Wl,-exported_symbol,_cs_developer_mode -Wl,-exported_symbol,_cs_sign_self -Wl,-exported_symbol,_al_pairing_cancel_host \
   -o "$APP_BUNDLE/CarrierSIM"
 "$IOS_CLANG" "${COMMON_FLAGS[@]}" -fapplication-extension "${TUNNEL_SOURCES[@]}" \
   -framework Foundation -framework NetworkExtension -framework Network \
@@ -100,7 +100,7 @@ PY
 "$IOS_NM" -gU "$APP_BUNDLE/CarrierSIM" | python3 -c '
 import sys
 symbols = {line.split()[-1] for line in sys.stdin if line.split()}
-required = {"_ALGetGrappaToken", "_cs_execute", "_cs_install_ipa", "_al_pairing_cancel_host"}
+required = {"_ALGetGrappaToken", "_cs_execute", "_cs_install_ipa", "_cs_developer_mode", "_cs_sign_self", "_al_pairing_cancel_host"}
 assert required <= symbols, "Missing bridge exports: " + ", ".join(sorted(required - symbols))
 '
 

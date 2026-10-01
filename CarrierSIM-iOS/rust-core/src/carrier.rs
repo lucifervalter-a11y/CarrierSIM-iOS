@@ -145,9 +145,9 @@ struct Operation {
     recovered: bool,
 }
 
-struct OpLock(File);
+pub(crate) struct OpLock(File);
 impl OpLock {
-    fn acquire(root: &Path) -> Result<Self> {
+    pub(crate) fn acquire(root: &Path) -> Result<Self> {
         private_dir(root)?;
         let f = OpenOptions::new().create(true).read(true).write(true).mode(0o600)
             .open(root.join("operation.lock")).map_err(|e| format!("Журнал недоступен: {e}"))?;
@@ -231,7 +231,7 @@ fn plist_string(v:&Plist)->String {
     match v { Plist::String(s)=>s.clone(), Plist::Integer(i)=>i.as_unsigned().map(|n|n.to_string()).unwrap_or_default(), _=>String::new() }
 }
 
-async fn lockdown(tunnel:&mut AppDeviceTunnel)->Result<LockdownClient> {
+pub(crate) async fn lockdown(tunnel:&mut AppDeviceTunnel)->Result<LockdownClient> {
     match tunnel {
         AppDeviceTunnel::Rsd{adapter,handshake}=>handshake.connect::<LockdownClient>(adapter).await
             .map_err(|e|format!("Lockdown по защищённому туннелю недоступен: {e}")),
@@ -242,9 +242,7 @@ async fn lockdown(tunnel:&mut AppDeviceTunnel)->Result<LockdownClient> {
         }
     }
 }
-pub(crate) async fn device_info(tunnel:&mut AppDeviceTunnel)->Result<Device> {
-    tokio::time::timeout(IO_TIMEOUT,async {
-        let mut ld=lockdown(tunnel).await?;
+async fn identity_from_lockdown(ld:&mut LockdownClient)->Result<Device> {
         let mut values=BTreeMap::new();
         for key in ["UniqueDeviceID","DeviceName","ProductType","HardwareModel","ProductVersion","BuildVersion","ActivationState"] {
             values.insert(key,plist_string(&ld.get_value(Some(key),None).await
@@ -252,13 +250,25 @@ pub(crate) async fn device_info(tunnel:&mut AppDeviceTunnel)->Result<Device> {
         }
         let udid=values.get("UniqueDeviceID").cloned().unwrap_or_default();
         ensure(!udid.is_empty(),"Не удалось определить iPhone; запись запрещена")?;
-        let rows=ld.get_value(Some("CarrierBundleInfoArray"),None).await
-            .map_err(|e|format!("Сведения о SIM недоступны: {e}"))?;
-        ensure(rows.as_array().is_some(),"iPhone вернул неверные сведения о SIM")?;
         Ok(Device{udid_hash:data::digest(udid.as_bytes()),name:values["DeviceName"].clone(),
             model:values["ProductType"].clone(),hardware:values["HardwareModel"].clone(),
             ios:values["ProductVersion"].clone(),build:values["BuildVersion"].clone(),
-            activation:values["ActivationState"].clone(),rows})
+            activation:values["ActivationState"].clone(),rows:Plist::Array(vec![])})
+}
+pub(crate) async fn device_identity(tunnel:&mut AppDeviceTunnel)->Result<Device> {
+    tokio::time::timeout(IO_TIMEOUT,async {
+        let mut ld=lockdown(tunnel).await?;
+        identity_from_lockdown(&mut ld).await
+    }).await.map_err(|_|"iPhone не ответил при чтении сведений".to_string())?
+}
+pub(crate) async fn device_info(tunnel:&mut AppDeviceTunnel)->Result<Device> {
+    tokio::time::timeout(IO_TIMEOUT,async {
+        let mut ld=lockdown(tunnel).await?;
+        let mut device=identity_from_lockdown(&mut ld).await?;
+        device.rows=ld.get_value(Some("CarrierBundleInfoArray"),None).await
+            .map_err(|e|format!("Сведения о SIM недоступны: {e}"))?;
+        ensure(device.rows.as_array().is_some(),"iPhone вернул неверные сведения о SIM")?;
+        Ok(device)
     }).await.map_err(|_|"iPhone не ответил при чтении сведений".to_string())?
 }
 async fn require_binding(tunnel:&mut AppDeviceTunnel,frozen:&Device,check_sims:bool)->Result<()> {
@@ -756,6 +766,9 @@ fn pending_ops(runs:&Path,hash:Option<&str>)->Result<Vec<PathBuf>> {
         if unfinished{pending.push(path);}
     }
     pending.sort();Ok(pending)
+}
+pub(crate) fn needs_recovery(work:&Path,hash:&str)->Result<bool> {
+    Ok(!pending_ops(&work.join("runs"),Some(hash))?.is_empty())
 }
 fn new_stage(op:&Path,label:&str)->Result<PathBuf> {
     let root=op.join("stages");private_dir(&root)?;

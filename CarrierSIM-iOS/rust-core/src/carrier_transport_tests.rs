@@ -5,6 +5,30 @@ use super::*;
 use idevice::afc::opcode::AfcOpcode;
 use idevice::afc::packet::{AfcPacket, AfcPacketHeader};
 
+#[tokio::test]
+async fn basic_device_identity_does_not_request_sim_information() {
+    let (client,mut server)=tokio::io::duplex(8192);
+    let server=tokio::spawn(async move {
+        let mut keys=Vec::new();
+        for _ in 0..7 {
+            let length=server.read_u32().await.unwrap();assert!(length<8192);
+            let mut bytes=vec![0;length as usize];server.read_exact(&mut bytes).await.unwrap();
+            let request=Plist::from_reader(std::io::Cursor::new(bytes)).unwrap();
+            let key=request.as_dictionary().unwrap().get("Key").and_then(Plist::as_string).unwrap();
+            assert_ne!(key,"CarrierBundleInfoArray");keys.push(key.to_string());
+            let value=match key {"UniqueDeviceID"=>"TEST-IPHONE","ProductVersion"=>"26.0","ActivationState"=>"Activated",_=>"test"};
+            let mut response=Dictionary::new();response.insert("Value".into(),Plist::String(value.into()));
+            let mut bytes=Vec::new();Plist::Dictionary(response).to_writer_xml(&mut bytes).unwrap();
+            server.write_u32(bytes.len() as u32).await.unwrap();server.write_all(&bytes).await.unwrap();
+        } keys
+    });
+    let mut lockdown=LockdownClient::new(idevice::Idevice::new(Box::new(client),"test"));
+    let identity=identity_from_lockdown(&mut lockdown).await.unwrap();
+    assert_eq!(identity.udid_hash,data::digest(b"TEST-IPHONE"));
+    assert_eq!(identity.ios,"26.0");assert!(identity.rows.as_array().unwrap().is_empty());
+    assert_eq!(server.await.unwrap().len(),7);
+}
+
 #[derive(Clone)]
 enum FakeNode {
     Directory(Vec<String>),

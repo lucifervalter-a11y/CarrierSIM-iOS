@@ -44,9 +44,23 @@ int32_t cs_execute(const char *pairing_path,
 
 // Install an already signed IPA on an explicitly checked LAN target.
 // iOS performs the authoritative Apple signature / provisioning verification.
-int32_t cs_install_ipa(const char *pairing_path, const char *ipa_path,
+int32_t cs_install_ipa(const char *pairing_path, const char *ipa_path, const char *work_dir,
                       const char *request_json, ALLogCallback cb, void *ctx,
                       char **result_json, char **error);
+
+// Read status or request reveal/enable. Success of a request is not proof that
+// Developer Mode is on. Owner confirms on the target iPhone after reboot.
+int32_t cs_developer_mode(const char *pairing_path, const char *work_dir,
+                         const char *request_json, ALLogCallback cb, void *ctx,
+                         char **result_json, char **error);
+
+// Sign only the running CarrierSIM, locally, for a previously checked device.
+// password is never persisted or logged. The returned IPA contains no P12/key.
+int32_t cs_sign_self(const char *app_path, const char *work_dir,
+                    const char *p12_path, const char *password,
+                    const char *profile_path, const char *extension_profile_path,
+                    const char *request_json, ALLogCallback cb, void *ctx,
+                    char **result_json, char **error);
 
 // ---------------------------------------------------------------------------
 // Pairing — RPPairing host

@@ -74,8 +74,8 @@ def verify(path: Path, external: bool) -> dict:
         assert info["CFBundleExecutable"] == "CarrierSIM"
         assert info["CFBundleIdentifier"] == "com.tema.CarrierSIM"
         assert info["MinimumOSVersion"] == "26.0"
-        assert info["CFBundleShortVersionString"] == "1.1.0"
-        assert {"_remoted._tcp", "_remotepairing._tcp"}.issubset(info["NSBonjourServices"])
+        assert info["CFBundleShortVersionString"] == "1.2.0"
+        assert {"_remoted._tcp", "_remotepairing._tcp", "_apple-mobdev2._tcp"}.issubset(info["NSBonjourServices"])
         assert not info.get("UIFileSharingEnabled"), "Private recovery data must not appear in Documents sharing"
         assert "_remotepairing-pairable-host._tcp" in info["NSBonjourServices"]
         assert "audio" in info.get("UIBackgroundModes", []), "Pairing keep-alive declaration missing"
@@ -88,6 +88,8 @@ def verify(path: Path, external: bool) -> dict:
         binary = archive.read(APP + "CarrierSIM")
         assert b"cs_install_ipa" in binary, "LAN installation export missing"
         assert b"CSLANBrowserViewController" in binary, "LAN browser missing"
+        assert b"cs_developer_mode" in binary and b"cs_sign_self" in binary, "Developer mode/signing exports missing"
+        assert b"CSShareViewController" in binary and b"CSDeveloperModeViewController" in binary, "Sharing/developer mode screens missing"
         executable = archive.read(APP + "CarrierSIM")
         assert archive.getinfo(APP + "CarrierSIM").external_attr >> 16 & stat.S_IXUSR
         assert b"cs_execute" in executable and b"al_pairing_cancel_host" in executable, "Carrier or cancellation implementation missing"

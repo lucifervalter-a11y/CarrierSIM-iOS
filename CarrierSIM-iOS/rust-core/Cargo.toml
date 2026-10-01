@@ -41,6 +41,9 @@ plist = "1.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 sha2 = "0.10"
 hex = "0.4"
+apple-codesign = { package = "isideload-apple-codesign", version = "=0.29.11" }
+cms = { package = "isideload-cryptographic-message-syntax", version = "=0.31.1", features = ["http"] }
+zeroize = "1.8"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 libc = "0.2"

@@ -83,7 +83,7 @@ TUNNEL_SOURCES=("$PROJECT_ROOT"/Tunnel/*.m)
 clang "${COMMON_FLAGS[@]}" "${APP_SOURCES[@]}" "$RUST_LIBRARY" \
   "${APP_FRAMEWORKS[@]}" -lc++ -lz -lsqlite3 -lresolv -liconv \
   -Wl,-u,_ALGetGrappaToken -Wl,-exported_symbol,_ALGetGrappaToken \
-  -Wl,-exported_symbol,_cs_execute -Wl,-exported_symbol,_cs_install_ipa -Wl,-exported_symbol,_al_pairing_cancel_host \
+  -Wl,-exported_symbol,_cs_execute -Wl,-exported_symbol,_cs_install_ipa -Wl,-exported_symbol,_cs_developer_mode -Wl,-exported_symbol,_cs_sign_self -Wl,-exported_symbol,_al_pairing_cancel_host \
   -o "$APP_BUNDLE/CarrierSIM"
 
 # Foundation supplies the extension entry point. No UIApplicationMain is used.
@@ -153,7 +153,7 @@ python3 "$PROJECT_ROOT/scripts/build-inputs.py" verify "$PROJECT_ROOT" "$BUILD_R
 
 # Keep this symbol dynamically discoverable for the paired service authorization.
 llvm-nm --extern-only --defined-only "$APP_BUNDLE/CarrierSIM" | \
-  python3 -c 'import sys; s=sys.stdin.read(); required=["_ALGetGrappaToken", "_cs_execute", "_cs_install_ipa", "_al_pairing_cancel_host"]; missing=[name for name in required if name not in s]; assert not missing, "Required bridge exports are missing: " + ", ".join(missing)'
+  python3 -c 'import sys; s=sys.stdin.read(); required=["_ALGetGrappaToken", "_cs_execute", "_cs_install_ipa", "_cs_developer_mode", "_cs_sign_self", "_al_pairing_cancel_host"]; missing=[name for name in required if name not in s]; assert not missing, "Required bridge exports are missing: " + ", ".join(missing)'
 
 export PROJECT_ROOT BUILD_ROOT STAGE_ROOT
 python3 - <<'PY'
