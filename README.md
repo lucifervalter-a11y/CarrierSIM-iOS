@@ -1,5 +1,7 @@
 # CarrierSIM 1.1 для iPhone
 
+**ОРИГИНАЛ CARRIERSIM ВЗЯТ ИЗ [IOS-BUNDLES/CARRIERSIM](https://github.com/ios-bundles/CarrierSIM).**
+
 [Скачать версию 1.1](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/releases/tag/v1.1.0) · [Полная инструкция](CarrierSIM-iOS/README.md) · [Исходники](CarrierSIM-iOS/)
 
 Новая экспериментальная сборка: выбор своего или другого iPhone, поиск служб Apple в Wi-Fi, установка подписанного IPA, отдельные сопряжения и резервные копии.
