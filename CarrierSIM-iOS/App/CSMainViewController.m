@@ -82,7 +82,7 @@ static void CSLogCallback(void *context, const char *message) {
     [self configureConnection];
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(becameActive) name:UIApplicationDidBecomeActiveNotification object:nil];
     [self buildHeader];
-    [self appendLog:@"CarrierSIM 1.2 • Подпись P12, подготовка режима разработчика и прямое применение профиля другу."];
+    [self appendLog:@"CarrierSIM 1.2.1 • Подпись P12, подготовка режима разработчика и прямое применение профиля другу."];
 }
 
 

@@ -158,7 +158,11 @@ pub unsafe extern "C" fn cs_install_ipa(pairing_path:*const c_char,ipa_path:*con
         if pairing.is_empty() || ipa.is_empty() || work.is_empty() || text.len()>8192 {return Err("Неверный запрос установки.".to_string());}
         let request:InstallRequest=serde_json::from_str(&text).map_err(|e|e.to_string())?;
         let logger=Logger{cb,ctx};
-        idevice_ffi::run_sync_local(install(Path::new(&pairing),Path::new(&ipa),Path::new(&work),request,&logger))
+        // Creating/polling the transport future overflows a 512 KB GCD stack,
+        // even when preflight returns an error. Keep it on the worker stack.
+        ffi_util::run_with_large_stack("CarrierSIMInstallation",move || {
+            idevice_ffi::run_sync_local(install(Path::new(&pairing),Path::new(&ipa),Path::new(&work),request,&logger))
+        })?
     })).unwrap_or_else(|_|Err("Установка прервалась. Проверь iPhone друга перед повтором.".into()));
     match result {
         Ok(value)=>{if !result_json.is_null(){*result_json=ffi_util::cstr(value.to_string());}0},

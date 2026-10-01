@@ -74,7 +74,7 @@ def verify(path: Path, external: bool) -> dict:
         assert info["CFBundleExecutable"] == "CarrierSIM"
         assert info["CFBundleIdentifier"] == "com.tema.CarrierSIM"
         assert info["MinimumOSVersion"] == "26.0"
-        assert info["CFBundleShortVersionString"] == "1.2.0"
+        assert info["CFBundleShortVersionString"] == "1.2.1"
         assert {"_remoted._tcp", "_remotepairing._tcp", "_apple-mobdev2._tcp"}.issubset(info["NSBonjourServices"])
         assert not info.get("UIFileSharingEnabled"), "Private recovery data must not appear in Documents sharing"
         assert "_remotepairing-pairable-host._tcp" in info["NSBonjourServices"]

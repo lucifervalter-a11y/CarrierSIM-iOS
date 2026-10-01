@@ -1,5 +1,3 @@
-   Compiling idevice v0.1.63 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core/vendor/idevice)
-   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
 warning: function `parse_u64_value` is never used
   --> vendor/idevice/src/services/dvt/process_control.rs:55:4
    |
@@ -165,6 +163,8 @@ warning: methods `read_message_timeout`, `call_method_with_reply`, `set_incoming
 1478 |     pub(crate) async fn send_raw_reply_for(
      |                         ^^^^^^^^^^^^^^^^^^
 
+warning: `idevice` (lib) generated 11 warnings
+   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
 warning: unused variable: `pin_callback`
    --> vendor/idevice-ffi/src/tunnel_provider.rs:832:5
     |
@@ -191,7 +191,6 @@ warning: unused variable: `ctx`
 1002 |     let ctx = PinCtx(pin_context);
      |         ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
 
-warning: `idevice` (lib) generated 11 warnings
 warning: `idevice-ffi` (lib) generated 4 warnings (run `cargo fix --lib -p idevice-ffi` to apply 4 suggestions)
    Compiling airlift_ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core)
 warning: value assigned to `last_error` is never read
@@ -250,49 +249,49 @@ warning: fields `bundle`, `version`, `supported_sims`, and `hardware_supported` 
     = note: `Trigger` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
 
 warning: `airlift_ffi` (lib test) generated 6 warnings
-    Finished `release` profile [optimized] target(s) in 3m 06s
+    Finished `release` profile [optimized] target(s) in 3m 07s
      Running unittests src/lib.rs (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/build/host-tests/release/deps/airlift_ffi-d72da44745228ed9)
 
-running 68 tests
-test carrier::tests::finished_catalog_is_not_rolled_back_for_books_failure ... ok
+running 70 tests
 test carrier::tests::destination_names_cannot_escape_media ... ok
-test carrier::tests::interrupted_books_resume_accepts_only_known_object_values ... ok
-test carrier::tests::errors_do_not_expose_full_imsi ... ok
 test carrier::tests::interrupted_books_resume_cannot_discard_new_file ... ok
+test carrier::tests::interrupted_export_is_never_treated_as_no_change ... ok
 test carrier::tests::pending_recovery_knows_exact_three_owned_ids ... ok
 test carrier::tests::pre_export_failure_needs_only_media_cleanup ... ok
-test carrier::tests::interrupted_export_is_never_treated_as_no_change ... ok
 test carrier::tests::unhashed_local_backup_never_authorizes_recovery ... ok
-test carrier::transport_tests::direct_file_read_refuses_symlink_without_opening_it ... ok
-test carrier::transport_tests::complete_file_reads_exactly_size_without_afc_eof_probe ... ok
 test carrier::transport_tests::appended_bytes_after_read_are_detected_by_second_stat ... ok
 test carrier::transport_tests::basic_device_identity_does_not_request_sim_information ... ok
+test carrier::transport_tests::complete_file_reads_exactly_size_without_afc_eof_probe ... ok
+test carrier::transport_tests::direct_file_read_refuses_symlink_without_opening_it ... ok
 test carrier::transport_tests::empty_file_does_not_issue_zero_byte_or_eof_read ... ok
 test carrier::transport_tests::remote_catalogue_preserves_symlink_bytes_without_following_target ... ok
 test carrier::transport_tests::symbolic_link_catalogue_root_is_rejected_without_traversal ... ok
+test carrier::tests::interrupted_books_resume_accepts_only_known_object_values ... ok
+test carrier::tests::errors_do_not_expose_full_imsi ... ok
 test carrier_data::tests::backup_roundtrip_preserves_types_links_hidden_files_and_non_ascii ... ok
 test carrier_data::tests::corrupt_zip_crc_is_rejected ... ok
+test carrier::transport_tests::truncated_file_is_rejected_and_its_handle_is_closed ... ok
 test carrier_data::tests::crc_uses_standard_zip_polynomial ... ok
 test carrier_data::tests::duplicate_zip_entries_are_rejected ... ok
-test carrier::transport_tests::truncated_file_is_rejected_and_its_handle_is_closed ... ok
-test carrier_data::tests::duplicate_slot_and_imsi_and_invalid_selection_are_rejected ... ok
-test carrier_data::tests::missing_parent_and_invalid_symlink_are_rejected ... ok
+test carrier_data::tests::limits_reject_large_counts_depth_and_data ... ok
 test carrier_data::tests::missing_or_ambiguous_logs_do_not_confirm_signature ... ok
+test carrier_data::tests::missing_parent_and_invalid_symlink_are_rejected ... ok
 test carrier_data::tests::paths_cannot_escape_or_traverse_links ... ok
-test carrier_data::tests::profile_names_cannot_escape_fixed_system_directory ... ok
 test carrier_data::tests::plan_changes_only_selected_imsi_and_refuses_file_collision ... ok
+test carrier_data::tests::profile_names_cannot_escape_fixed_system_directory ... ok
 test carrier_data::tests::public_sim_does_not_serialize_complete_imsi ... ok
 test carrier_data::tests::restore_removes_only_root_imsi_symlinks ... ok
 test carrier_data::tests::sims_require_complete_identifiers_and_correct_prefix ... ok
 test carrier_data::tests::staged_system_links_must_name_one_bundle ... ok
+test carrier_data::tests::staging_preserves_payload_and_contains_safe_resolution_scaffold ... ok
 test carrier_data::tests::tree_hash_matches_desktop_python_and_unicode_escaping ... ok
 test carrier_data::tests::yaml_subset_preserves_leading_zero_network_and_rejects_duplicates ... ok
-test carrier_data::tests::staging_preserves_payload_and_contains_safe_resolution_scaffold ... ok
 test carrier_recovery::tests::mixed_manifest_preserves_new_and_previous_user_rows ... ok
-test carrier_data::tests::limits_reject_large_counts_depth_and_data ... ok
 test carrier_recovery::tests::normal_catalog_keeps_current_unrelated_additions_and_deletions ... ok
-test carrier_recovery::tests::synthetic_manifest_restores_exact_original_bytes ... ok
-test carrier_recovery::tests::unrelated_manifest_changes_are_not_replaced_and_only_new_empty_locks_drop ... ok
+test carrier::tests::finished_catalog_is_not_rolled_back_for_books_failure ... ok
+test carrier_data::tests::duplicate_slot_and_imsi_and_invalid_selection_are_rejected ... ok
+test carrier_recovery::tests::sqlite_triggers_stop_recovery_before_any_original_bytes_change ... ok
+test carrier_recovery::tests::sqlite_wal_cleanup_removes_exact_owned_rows_and_preserves_new_user_data ... ok
 test carrier_recovery::tests::unrelated_recovery_targets_and_ambiguous_references_are_rejected ... ok
 test carrier_trigger::tests::commcenter_capture_is_filtered_and_never_serialized ... ok
 test carrier_trigger::tests::multiline_commcenter_record_keeps_continuation_fields ... ok
@@ -303,25 +302,27 @@ test carrier_trigger::tests::readback_rejects_shrink_and_concurrent_modification
 test carrier_trigger::tests::relative_path_rejects_traversal_and_protocol_delimiters ... ok
 test developer_mode::tests::missing_or_non_boolean_status_is_unknown ... ok
 test developer_mode::tests::passcode_error_takes_precedence_over_success_key ... ok
-test carrier_recovery::tests::sqlite_triggers_stop_recovery_before_any_original_bytes_change ... ok
-test developer_mode::tests::post_reboot_accept_and_unknown_actions_are_not_exposed ... ok
-test device_target::tests::identity_change_or_missing_check_prevents_write ... ok
+test carrier_recovery::tests::synthetic_manifest_restores_exact_original_bytes ... ok
+test carrier_recovery::tests::unrelated_manifest_changes_are_not_replaced_and_only_new_empty_locks_drop ... ok
 test developer_mode::tests::real_plist_exchange_rejects_false_success_for_all_actions ... ok
-test carrier_recovery::tests::sqlite_wal_cleanup_removes_exact_owned_rows_and_preserves_new_user_data ... ok
+test developer_mode::tests::post_reboot_accept_and_unknown_actions_are_not_exposed ... ok
 test device_target::tests::public_loopback_and_invalid_destinations_are_rejected ... ok
 test device_target::tests::remote_destination_is_exclusive ... ok
-test installer::tests::minimum_ios_uses_numeric_comparison ... ok
-test installer::tests::ios_error_without_description_cannot_report_install_success ... ok
-test installer::tests::every_extension_requires_provisioning ... ok
-test installer::tests::signed_structure_is_only_a_preflight ... ok
-test installer::tests::traversal_and_multiple_apps_are_rejected ... ok
-test sharing::tests::app_store_and_wrong_udid_profiles_cannot_be_shared ... ok
-test sharing::tests::appended_xml_is_not_a_provisioning_signature ... ok
-test installer::tests::unsigned_package_is_rejected_before_network ... ok
-test sharing::tests::wildcard_is_restricted_to_its_identifier_prefix ... ok
-test sharing::tests::profile_rejects_expiration_wrong_certificate_and_missing_vpn_permission ... ok
+test device_target::tests::identity_change_or_missing_check_prevents_write ... ok
 test carrier_data::tests::bundled_assets_and_trigger_exclusions_match_original ... ok
+test installer::tests::every_extension_requires_provisioning ... ok
+test installer::tests::ios_error_without_description_cannot_report_install_success ... ok
+test installer::tests::minimum_ios_uses_numeric_comparison ... ok
+test installer::tests::signed_structure_is_only_a_preflight ... ok
+test installer::tests::unsigned_package_is_rejected_before_network ... ok
+test ffi_stack_tests::developer_mode_returns_error_from_ios_sized_stack ... ok
+test sharing::tests::appended_xml_is_not_a_provisioning_signature ... ok
+test sharing::tests::app_store_and_wrong_udid_profiles_cannot_be_shared ... ok
+test installer::tests::traversal_and_multiple_apps_are_rejected ... ok
+test sharing::tests::profile_rejects_expiration_wrong_certificate_and_missing_vpn_permission ... ok
+test sharing::tests::wildcard_is_restricted_to_its_identifier_prefix ... ok
+test ffi_stack_tests::installer_returns_error_from_ios_sized_stack ... ok
 test sharing::tests::imported_p12_signs_real_arm64_bundle_and_tampering_is_detected ... ok
 
-test result: ok. 68 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+test result: ok. 70 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
 

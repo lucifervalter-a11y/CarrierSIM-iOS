@@ -1,11 +1,14 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.1",
   "minimum_ios": "26.0",
-  "core_tests": 57,
+  "core_tests": 70,
   "tunnel_tests": 1,
   "native_build_passed": true,
   "package_checks_passed": 2,
   "physical_device_tested": false,
   "apple_signed": false,
-  "github_workflow_executed": false
+  "github_workflow_executed": false,
+  "build": "4",
+  "stack_regression_before": "Both public FFI calls abort on a 512 KB caller stack",
+  "stack_regression_after": "Both calls return an ordinary error; 70 core + 1 tunnel tests pass"
 }

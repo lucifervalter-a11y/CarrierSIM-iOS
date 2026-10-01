@@ -51,7 +51,7 @@ jobs:
         '
     - uses: actions/upload-artifact@v4
       with:
-        name: CarrierSIM-1.2-needs-Apple-signing
+        name: CarrierSIM-1.2.1-needs-Apple-signing
         path: 'CarrierSIM-iOS/build/*.ipa
 
           CarrierSIM-iOS/build/CarrierSIM-build-manifest.json

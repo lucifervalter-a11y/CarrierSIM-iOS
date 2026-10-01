@@ -22,6 +22,8 @@ mod device_target;
 mod installer;
 mod developer_mode;
 mod sharing;
+#[cfg(test)]
+mod ffi_stack_tests;
 
 /// Execute a CarrierSIM status, apply, restore, or recovery request. The only
 /// non-Media write destination is the device's iPhone carrier catalogue.

@@ -110,7 +110,9 @@ async fn execute(pairing:&Path,work:&Path,request:Request,logger:&Logger)->Resul
     Ok(result)
 }
 
-/// Blocks off the main queue; outputs must be freed with al_string_free.
+/// Blocks off the main queue. The async transport is constructed and polled on
+/// a dedicated 4 MB stack, never on the iOS GCD caller's 512 KB stack.
+/// Outputs must be freed with al_string_free.
 #[no_mangle]
 pub unsafe extern "C" fn cs_developer_mode(pairing_path:*const c_char,work_dir:*const c_char,request_json:*const c_char,
     cb:ALLogCallback,ctx:*mut c_void,result_json:*mut *mut c_char,error:*mut *mut c_char)->i32 {
@@ -121,7 +123,9 @@ pub unsafe extern "C" fn cs_developer_mode(pairing_path:*const c_char,work_dir:*
         if pairing.is_empty() || work.is_empty() || text.is_empty() || text.len()>8192 {return Err("Неверный запрос режима разработчика.".into());}
         let request:Request=serde_json::from_str(&text).map_err(|_|"Неверное действие или параметры режима разработчика.".to_string())?;
         let logger=Logger{cb,ctx};
-        idevice_ffi::run_sync_local(execute(Path::new(&pairing),Path::new(&work),request,&logger))
+        ffi_util::run_with_large_stack("CarrierSIMDeveloperMode",move || {
+            idevice_ffi::run_sync_local(execute(Path::new(&pairing),Path::new(&work),request,&logger))
+        })?
     })).unwrap_or_else(|_|Err("Проверка прервалась. Проверь экран iPhone и повтори только чтение состояния.".into()));
     match result {
         Ok(value)=>{if !result_json.is_null(){*result_json=ffi_util::cstr(value.to_string());}0},

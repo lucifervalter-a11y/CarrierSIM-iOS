@@ -46,7 +46,9 @@ static NSString *CSModeString(id value) { return [value isKindOfClass:NSString.c
     if (self.waitingSince && -self.waitingSince.timeIntervalSinceNow>300) {
         [self stopWaiting];self.message=@"Время ожидания истекло. Состояние неизвестно: проверь экран выбранного iPhone и нажми «Проверить состояние».";
     }
-    if (!self.busy) [self run:@"status"];
+    // An ordinary opening only presents controls. Resume reads automatically
+    // only for the durable wait after an explicitly requested/manual reboot.
+    if (self.waitingSince && !self.busy) [self run:@"status"];
 }
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];self.visible=NO;[self.timer invalidate];self.timer=nil;

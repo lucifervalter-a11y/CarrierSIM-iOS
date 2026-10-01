@@ -1,4 +1,3 @@
-   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
 warning: function `parse_u64_value` is never used
   --> vendor/idevice/src/services/dvt/process_control.rs:55:4
    |
@@ -165,6 +164,7 @@ warning: methods `read_message_timeout`, `call_method_with_reply`, `set_incoming
      |                         ^^^^^^^^^^^^^^^^^^
 
 warning: `idevice` (lib) generated 11 warnings
+   Compiling idevice-ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core/vendor/idevice-ffi)
 warning: unused variable: `pin_callback`
    --> vendor/idevice-ffi/src/tunnel_provider.rs:832:5
     |
@@ -191,12 +191,96 @@ warning: unused variable: `ctx`
 1002 |     let ctx = PinCtx(pin_context);
      |         ^^^ help: if this is intentional, prefix it with an underscore: `_ctx`
 
-warning: `idevice-ffi` (lib test) generated 4 warnings (run `cargo fix --lib -p idevice-ffi --tests` to apply 4 suggestions)
-    Finished `release` profile [optimized] target(s) in 1m 11s
-     Running unittests src/lib.rs (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/build/host-tests/release/deps/idevice_ffi-c3679e5bbc917a3d)
+warning: `idevice-ffi` (lib) generated 4 warnings (run `cargo fix --lib -p idevice-ffi` to apply 4 suggestions)
+   Compiling airlift_ffi v0.1.0 (/workspace/CarrierSIM-v1.2/CarrierSIM-iOS/rust-core)
+warning: value assigned to `last_error` is never read
+   --> src/exploit.rs:210:21
+    |
+210 |                     last_error = err_msg;
+    |                     ^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
 
+warning: value assigned to `last_error` is never read
+   --> src/exploit.rs:215:21
+    |
+215 |                     last_error = err_msg;
+    |                     ^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+
+warning: function `write_tree_zip` is never used
+   --> src/carrier_data.rs:373:8
+    |
+373 | pub fn write_tree_zip(path: &Path, tree: &Tree) -> Result<(), String> {
+    |        ^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: struct `DeviceInfo` is never constructed
+   --> src/carrier_data.rs:620:12
+    |
+620 | pub struct DeviceInfo {
+    |            ^^^^^^^^^^
+
+warning: function `validate_device_info` is never used
+   --> src/carrier_data.rs:630:8
+    |
+630 | pub fn validate_device_info(info: &plist::Dictionary) -> Result<DeviceInfo, String> {
+    |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `bundle`, `version`, `supported_sims`, and `hardware_supported` are never read
+   --> src/carrier_data.rs:658:9
+    |
+656 | pub struct Trigger {
+    |            ------- fields in this struct
+657 |     pub filename: String,
+658 |     pub bundle: String,
+    |         ^^^^^^
+659 |     pub version: String,
+    |         ^^^^^^^
+...
+663 |     pub supported_sims: Vec<String>,
+    |         ^^^^^^^^^^^^^^
+664 |     pub hardware_supported: bool,
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: `Trigger` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: `airlift_ffi` (lib test) generated 6 warnings
+    Finished `release` profile [optimized] target(s) in 1m 43s
+     Running unittests src/lib.rs (/workspace/CarrierSIM-review/source/CarrierSIM-iOS/build/host-tests/release/deps/airlift_ffi-d72da44745228ed9)
+
+running 2 tests
+
+thread 'ffi_stack_tests::installer_returns_error_from_ios_sized_stack' (31052) panicked at src/ffi_stack_tests.rs:10:9:
+small-stack FFI subprocess failed: 
 running 1 test
-test tunnel_provider::carrier_sim_lan_tests::lan_target_ignores_loopback_extra_hosts_and_previous_device_cache ... ok
+test ffi_stack_tests::installer_returns_error_from_ios_sized_stack ... 
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+thread 'ios-sized-caller' (31057) has overflowed its stack
+fatal runtime error: stack overflow, aborting
 
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'ffi_stack_tests::developer_mode_returns_error_from_ios_sized_stack' (31051) panicked at src/ffi_stack_tests.rs:10:9:
+small-stack FFI subprocess failed: 
+running 1 test
+test ffi_stack_tests::developer_mode_returns_error_from_ios_sized_stack ... 
+
+thread 'ios-sized-caller' (31058) has overflowed its stack
+fatal runtime error: stack overflow, aborting
+
+test ffi_stack_tests::developer_mode_returns_error_from_ios_sized_stack ... FAILED
+test ffi_stack_tests::installer_returns_error_from_ios_sized_stack ... FAILED
+
+failures:
+
+failures:
+    ffi_stack_tests::developer_mode_returns_error_from_ios_sized_stack
+    ffi_stack_tests::installer_returns_error_from_ios_sized_stack
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 68 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--lib`
