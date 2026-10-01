@@ -6,9 +6,9 @@
 
 ## Что скачать
 
-- **CarrierSIM-1.1-LAN.zip** — полный комплект: два IPA, исходники, инструкция и SHA-256.
-- **CarrierSIM-1.1-unsigned.ipa** — приложение со встроенным локальным VPN; для установки нужна подходящая подпись приложения и расширения.
-- **CarrierSIM-1.1-external-vpn.ipa** — вариант для подписи без VPN-расширения; нужен отдельный LocalDevVPN.
+- **[CarrierSIM-1.1-LAN.zip](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.1-LAN.zip)** — полный комплект: два IPA, исходники, инструкция и SHA-256.
+- **[CarrierSIM-1.1-unsigned.ipa](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.1-unsigned.ipa)** — приложение со встроенным локальным VPN; для установки нужна подходящая подпись приложения и расширения.
+- **[CarrierSIM-1.1-external-vpn.ipa](https://github.com/lucifervalter-a11y/CarrierSIM-iOS/raw/refs/heads/main/downloads/CarrierSIM-1.1-external-vpn.ipa)** — вариант для подписи без VPN-расширения; нужен отдельный LocalDevVPN.
 
 Все IPA в этом репозитории требуют подписи Apple для целевого iPhone. Для установки другу его устройство должно быть разрешено профилем подписи. Автоматическая подпись через Apple Account в этой версии отсутствует.
 
